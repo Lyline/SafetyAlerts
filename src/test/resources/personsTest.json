@@ -1,0 +1,20 @@
+[
+  {
+    "firstName": "Roger",
+    "lastName": "Boyd",
+    "address": "1509 Culver St",
+    "city": "Culver",
+    "zip": "97451",
+    "phone": "841-874-6512",
+    "email": "jaboyd@email.com"
+  },
+  {
+    "firstName": "Felicia",
+    "lastName": "Boyd",
+    "address": "1509 Culver St",
+    "city": "Culver",
+    "zip": "97451",
+    "phone": "841-874-6544",
+    "email": "jaboyd@email.com"
+  }
+]
