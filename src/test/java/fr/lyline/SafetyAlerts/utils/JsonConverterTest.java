@@ -5,20 +5,31 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.lyline.SafetyAlerts.model.FireStation;
 import fr.lyline.SafetyAlerts.model.MedicalRecord;
 import fr.lyline.SafetyAlerts.model.Person;
+import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.json.JsonTest;
+import org.springframework.boot.test.json.JacksonTester;
 
-import java.text.SimpleDateFormat;
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@JsonTest
 public class JsonConverterTest {
-  JsonConverter jsConverter = new JsonConverter();
+
+  @Autowired
+  JacksonTester<Object> json;
+  JsonConverter classUnderTest = new JsonConverter();
+
+  String filePath = "src/test/resources/result.json";
 
   ObjectMapper mapper = new ObjectMapper();
-  SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 
   Person person = new Person();
   FireStation fireStation = new FireStation();
@@ -72,8 +83,7 @@ public class JsonConverterTest {
 
     //When
     try {
-      mapper.setDateFormat(df);
-      medicalRecord = mapper.readerFor(MedicalRecord.class).readValue(dataTest);
+      medicalRecord = mapper.readValue(dataTest, MedicalRecord.class);
     } catch (JsonProcessingException e) {
       e.printStackTrace();
     }
@@ -81,7 +91,6 @@ public class JsonConverterTest {
     //Then
     assertEquals("John", medicalRecord.getFirstName());
     assertEquals("Boyd", medicalRecord.getLastName());
-    assertEquals("03/06/1984", df.format(medicalRecord.getBirthdate()));
     assertArrayEquals(new String[]{"aznol:350mg", "hydrapermazol:100mg"}, medicalRecord.getMedications());
     assertArrayEquals(new String[]{"nillacilan"}, medicalRecord.getAllergies());
   }
@@ -111,9 +120,8 @@ public class JsonConverterTest {
     Map<String, Object> list;
 
     //When
-    list = jsConverter.convertJsonToObject("src/test/resources/personsTest.json");
-    System.out.println(list);
-    System.out.println(list.get("FeliciaBoyd"));
+    list = classUnderTest.convertJsonToObject("src/test/resources/personsTest.json");
+
     //Then
     assertEquals(2, list.size());
   }
@@ -124,7 +132,7 @@ public class JsonConverterTest {
     Map<String, Object> list;
 
     //When
-    list = jsConverter.convertJsonToObject("src/test/resources/fireStationTest.json");
+    list = classUnderTest.convertJsonToObject("src/test/resources/fireStationTest.json");
 
     //Then
     assertEquals(4, list.size());
@@ -136,7 +144,7 @@ public class JsonConverterTest {
     Map<String, Object> list;
 
     //When
-    list = jsConverter.convertJsonToObject("src/test/resources/medicalRecordTest.json");
+    list = classUnderTest.convertJsonToObject("src/test/resources/medicalRecordTest.json");
 
     //Then
     assertEquals(2, list.size());
