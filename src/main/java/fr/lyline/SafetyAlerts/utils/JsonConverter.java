@@ -6,10 +6,10 @@ import fr.lyline.SafetyAlerts.model.FireStation;
 import fr.lyline.SafetyAlerts.model.MedicalRecord;
 import fr.lyline.SafetyAlerts.model.Person;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -21,12 +21,11 @@ public class JsonConverter {
 
   public Map<String, Object> convertJsonToObject(String filePath) {
     ObjectMapper mapper = new ObjectMapper();
-    SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-    mapper.setDateFormat(df);
+    mapper.registerModule(new DateTimeModule());
 
     Map<String, Object> map = new HashMap<>();
+    String data = "";
 
-    String data = null;
     try {
       data = new String(Files.readAllBytes(Paths.get(filePath)));
     } catch (IOException e) {
@@ -49,12 +48,23 @@ public class JsonConverter {
         for (MedicalRecord medicalRecord : value) {
           map.put(medicalRecord.getFirstName() + medicalRecord.getLastName(), medicalRecord);
         }
-
       }
     } catch (JsonProcessingException e) {
       e.printStackTrace();
     }
 
     return map;
+  }
+
+  public void convertObjectToJson(String filePath, List<Object> objectList) {
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.registerModule(new DateTimeModule());
+
+    try {
+      mapper.writeValue(new File(filePath), objectList);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
   }
 }
