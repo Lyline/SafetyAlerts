@@ -1,8 +1,10 @@
 package fr.lyline.SafetyAlerts.model;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class FireStation {
   private int station;
   private String address;

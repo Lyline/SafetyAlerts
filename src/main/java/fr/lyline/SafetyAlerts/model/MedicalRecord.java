@@ -1,14 +1,21 @@
 package fr.lyline.SafetyAlerts.model;
 
-import lombok.Data;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import fr.lyline.SafetyAlerts.utils.DateTimeDeserializer;
+import fr.lyline.SafetyAlerts.utils.DateTimeSerializer;
+import lombok.Getter;
+import lombok.Setter;
+import org.joda.time.DateTime;
 
-import java.util.Date;
-
-@Data
+@Getter
+@Setter
 public class MedicalRecord {
   private String firstName;
   private String lastName;
-  private Date birthdate;
+  @JsonSerialize(using = DateTimeSerializer.class)
+  @JsonDeserialize(using = DateTimeDeserializer.class)
+  private DateTime birthdate;
   private String[] medications;
   private String[] allergies;
 
