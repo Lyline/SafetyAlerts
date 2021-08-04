@@ -149,4 +149,92 @@ public class JsonConverterTest {
     //Then
     assertEquals(2, list.size());
   }
+
+  @Test
+  void shouldCreatePersonJsonFileFromToJavaObject() throws IOException {
+    //Given
+    List<Object> list = new ArrayList<>();
+
+    person.setFirstName("Marcel");
+    person.setLastName("Dugenou");
+
+    Person person1 = new Person();
+    person1.setFirstName("Jane");
+    person1.setLastName("Doe");
+
+    list.add(person);
+    list.add(person1);
+
+    //When
+    classUnderTest.convertObjectToJson(filePath, list);
+
+    //Then
+    assertThat(this.json.write(person1))
+        .extractingJsonPathStringValue("firstName")
+        .isEqualTo("Jane");
+    assertThat(this.json.write(person))
+        .extractingJsonPathStringValue("firstName")
+        .isEqualTo("Marcel");
+  }
+
+  @Test
+  void shouldCreateFireStationJsonFileFromToJavaObject() throws IOException {
+    //Given
+    List<Object> list = new ArrayList<>();
+
+    fireStation.setStation(1);
+    fireStation.setAddress("LalaLand Av");
+
+    FireStation fireStation1 = new FireStation();
+    fireStation1.setStation(2);
+    fireStation1.setAddress("NoMansLand St");
+
+    list.add(fireStation);
+    list.add(fireStation1);
+
+    //When
+    classUnderTest.convertObjectToJson(filePath, list);
+
+    //Then
+    assertThat(this.json.write(fireStation))
+        .extractingJsonPathStringValue("address")
+        .isEqualTo("LalaLand Av");
+    assertThat(this.json.write(fireStation1))
+        .extractingJsonPathStringValue("address")
+        .isEqualTo("NoMansLand St");
+  }
+
+  @Test
+  void shouldCreateMedicalRecordJsonFileFromToJavaObject() throws IOException, ParseException {
+    //Given
+    List<Object> list = new ArrayList<>();
+
+    medicalRecord.setFirstName("Jane");
+    medicalRecord.setLastName("Doe");
+    medicalRecord.setBirthdate(new DateTime().withDate(2021, 06, 21));
+    medicalRecord.setMedications(new String[]{"penicillin", "aspirin"});
+    medicalRecord.setAllergies(new String[]{"lactose", "bee"});
+
+    MedicalRecord medicalRecord1 = new MedicalRecord();
+
+    medicalRecord1.setFirstName("Marcel");
+    medicalRecord1.setLastName("Dugenou");
+
+    list.add(medicalRecord);
+    list.add(medicalRecord1);
+
+    //When
+    classUnderTest.convertObjectToJson(filePath, list);
+
+    //Then
+    assertThat(this.json.write(medicalRecord))
+        .extractingJsonPathStringValue("firstName")
+        .isEqualTo("Jane");
+    assertThat(this.json.write(medicalRecord))
+        .extractingJsonPathStringValue("birthdate")
+        .isEqualTo("06/21/2021");
+    assertThat(this.json.write(medicalRecord1))
+        .extractingJsonPathStringValue("firstName")
+        .isEqualTo("Marcel");
+  }
 }
