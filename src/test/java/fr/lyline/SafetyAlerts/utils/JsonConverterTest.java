@@ -6,6 +6,7 @@ import fr.lyline.SafetyAlerts.model.FireStation;
 import fr.lyline.SafetyAlerts.model.MedicalRecord;
 import fr.lyline.SafetyAlerts.model.Person;
 import org.joda.time.DateTime;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
@@ -20,6 +21,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+
 @JsonTest
 public class JsonConverterTest {
 
@@ -27,7 +29,7 @@ public class JsonConverterTest {
   JacksonTester<Object> json;
   JsonConverter classUnderTest = new JsonConverter();
 
-  String filePath = "src/test/resources/result.json";
+  String outputFilePath = "src/test/resources/result.json";
 
   ObjectMapper mapper = new ObjectMapper();
 
@@ -166,7 +168,7 @@ public class JsonConverterTest {
     list.add(person1);
 
     //When
-    classUnderTest.convertObjectToJson(filePath, list);
+    classUnderTest.convertObjectToJson(outputFilePath, list);
 
     //Then
     assertThat(this.json.write(person1))
@@ -193,7 +195,7 @@ public class JsonConverterTest {
     list.add(fireStation1);
 
     //When
-    classUnderTest.convertObjectToJson(filePath, list);
+    classUnderTest.convertObjectToJson(outputFilePath, list);
 
     //Then
     assertThat(this.json.write(fireStation))
@@ -224,7 +226,7 @@ public class JsonConverterTest {
     list.add(medicalRecord1);
 
     //When
-    classUnderTest.convertObjectToJson(filePath, list);
+    classUnderTest.convertObjectToJson(outputFilePath, list);
 
     //Then
     assertThat(this.json.write(medicalRecord))
@@ -237,4 +239,63 @@ public class JsonConverterTest {
         .extractingJsonPathStringValue("firstName")
         .isEqualTo("Marcel");
   }
+
+  @Test
+  void shouldReadJsonFileReturnDataString() throws IOException {
+    //Given
+    String filePath = "src/test/resources/testReadFile.json";
+    //When
+    String actual = classUnderTest.readData(filePath);
+    //Then
+    assertFalse(actual.isEmpty());
+    assertEquals("[{\"Test\": \"value\"}]", actual);
+  }
+
+  @Test
+  void shouldReadJsonEmptyFileReturnEmptyData() throws IOException {
+    //Given
+    String filePath = "src/test/resources/empty.json";
+    //When
+    String actual = classUnderTest.readData(filePath);
+    //Then
+
+    //TODO: 05/08/2021 return exception instead of an empty String
+    assertTrue(actual.isEmpty());
+  }
+
+  @Disabled
+  @Test
+  void shouldReadNoJsonFileReturnException() {
+    //Given
+    String filePath = "";
+
+    //When
+
+    //Then
+    assertThrows(IOException.class, () -> classUnderTest.readData(filePath));
+  }
+
+  @Disabled
+  @Test
+  void shouldReturnExceptionWhenEmptyJsonFileToDeserialize() {
+    //Given
+    String filePath = "";
+    //When
+    Exception exception = (Exception) classUnderTest.convertJsonToObject(filePath);
+    //Then
+
+    assertEquals("File not found or empty", exception.getMessage());
+  }
+
+  @Disabled
+  @Test
+  void shouldReturnExceptionWhenJsonFileToDeserializeIsWrong() {
+    //Given
+    String testFilePath = "src/test/resources/personsTest.json";
+
+    //When
+    classUnderTest.convertJsonToObject(testFilePath);
+    //Then
+  }
+
 }
