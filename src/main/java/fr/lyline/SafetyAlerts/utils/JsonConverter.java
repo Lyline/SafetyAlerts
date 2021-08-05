@@ -19,31 +19,27 @@ public class JsonConverter {
   public JsonConverter() {
   }
 
-  public Map<String, Object> convertJsonToObject(String filePath) {
+  public Map<String, Object> convertJsonToObject(String inputFilePath) {
     ObjectMapper mapper = new ObjectMapper();
     mapper.registerModule(new DateTimeModule());
 
     Map<String, Object> map = new HashMap<>();
     String data = "";
 
-    try {
-      data = new String(Files.readAllBytes(Paths.get(filePath)));
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    data = readData(inputFilePath);
 
     try {
-      if (filePath.contains("personsTest")) {
+      if (inputFilePath.contains("personsTest")) {
         List<Person> value = Arrays.asList(mapper.readValue(data, Person[].class));
         for (Person person : value) {
           map.put(person.getFirstName() + person.getLastName(), person);
         }
-      } else if (filePath.contains("fireStation")) {
+      } else if (inputFilePath.contains("fireStation")) {
         List<FireStation> value = Arrays.asList(mapper.readValue(data, FireStation[].class));
         for (int i = 0; i < value.size(); i++) {
           map.put(String.valueOf(i), value.get(i));
         }
-      } else if (filePath.contains("medicalRecord")) {
+      } else if (inputFilePath.contains("medicalRecord")) {
         List<MedicalRecord> value = Arrays.asList(mapper.readValue(data, MedicalRecord[].class));                                                //
         for (MedicalRecord medicalRecord : value) {
           map.put(medicalRecord.getFirstName() + medicalRecord.getLastName(), medicalRecord);
@@ -52,19 +48,29 @@ public class JsonConverter {
     } catch (JsonProcessingException e) {
       e.printStackTrace();
     }
-
     return map;
   }
 
-  public void convertObjectToJson(String filePath, List<Object> objectList) {
+  public void convertObjectToJson(String outputFilePath, List<Object> objectList) {
     ObjectMapper mapper = new ObjectMapper();
     mapper.registerModule(new DateTimeModule());
 
     try {
-      mapper.writeValue(new File(filePath), objectList);
+      mapper.writeValue(new File(outputFilePath), objectList);
     } catch (IOException e) {
       e.printStackTrace();
     }
 
+  }
+
+  public String readData(String filePath) {
+    String data = "";
+    try {
+      data = new String(Files.readAllBytes(Paths.get(filePath)));
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return data;
   }
 }
