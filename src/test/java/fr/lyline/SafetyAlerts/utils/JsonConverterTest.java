@@ -119,10 +119,10 @@ public class JsonConverterTest {
   @Test
   void shouldCreateTwoPersonObjectsFromJsonFile() {
     //Given
-    Map<String, Object> list;
+    Map<String, Person> list;
 
     //When
-    list = classUnderTest.convertJsonToObject("src/test/resources/personsTest.json");
+    list = (Map<String, Person>) classUnderTest.convertJsonToObject("src/test/resources/personsTest.json");
 
     //Then
     assertEquals(2, list.size());
@@ -131,10 +131,10 @@ public class JsonConverterTest {
   @Test
   void shouldCreateFourFireStationObjectsFromJsonFile() {
     //Given
-    Map<String, Object> list;
+    Map<String, FireStation> list;
 
     //When
-    list = classUnderTest.convertJsonToObject("src/test/resources/fireStationTest.json");
+    list = (Map<String, FireStation>) classUnderTest.convertJsonToObject("src/test/resources/fireStationTest.json");
 
     //Then
     assertEquals(4, list.size());
@@ -143,10 +143,10 @@ public class JsonConverterTest {
   @Test
   void shouldCreateTwoMedicalRecordObjectsFromJsonFile() {
     //Given
-    Map<String, Object> list;
+    Map<String, MedicalRecord> list;
 
     //When
-    list = classUnderTest.convertJsonToObject("src/test/resources/medicalRecordTest.json");
+    list = (Map<String, MedicalRecord>) classUnderTest.convertJsonToObject("src/test/resources/medicalRecordTest.json");
 
     //Then
     assertEquals(2, list.size());
@@ -182,7 +182,7 @@ public class JsonConverterTest {
   @Test
   void shouldCreateFireStationJsonFileFromToJavaObject() throws IOException {
     //Given
-    List<Object> list = new ArrayList<>();
+    List<FireStation> list = new ArrayList<>();
 
     fireStation.setStation(1);
     fireStation.setAddress("LalaLand Av");

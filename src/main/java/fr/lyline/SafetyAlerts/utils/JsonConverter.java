@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.lyline.SafetyAlerts.model.FireStation;
 import fr.lyline.SafetyAlerts.model.MedicalRecord;
 import fr.lyline.SafetyAlerts.model.Person;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,43 +16,44 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class JsonConverter {
+@Component
+public class JsonConverter<T> {
   public JsonConverter() {
   }
 
-  public Map<String, Object> convertJsonToObject(String inputFilePath) {
+  public <T> T convertJsonToObject(String inputFilePath) {
     ObjectMapper mapper = new ObjectMapper();
     mapper.registerModule(new DateTimeModule());
 
-    Map<String, Object> map = new HashMap<>();
+    Map<String, T> map = new HashMap<>();
     String data = "";
 
     data = readData(inputFilePath);
 
     try {
-      if (inputFilePath.contains("personsTest")) {
+      if (inputFilePath.contains("person")) {
         List<Person> value = Arrays.asList(mapper.readValue(data, Person[].class));
         for (Person person : value) {
-          map.put(person.getFirstName() + person.getLastName(), person);
+          map.put(person.getFirstName() + person.getLastName(), (T) person);
         }
       } else if (inputFilePath.contains("fireStation")) {
         List<FireStation> value = Arrays.asList(mapper.readValue(data, FireStation[].class));
         for (int i = 0; i < value.size(); i++) {
-          map.put(String.valueOf(i), value.get(i));
+          map.put(String.valueOf(i), (T) value.get(i));
         }
       } else if (inputFilePath.contains("medicalRecord")) {
         List<MedicalRecord> value = Arrays.asList(mapper.readValue(data, MedicalRecord[].class));                                                //
         for (MedicalRecord medicalRecord : value) {
-          map.put(medicalRecord.getFirstName() + medicalRecord.getLastName(), medicalRecord);
+          map.put(medicalRecord.getFirstName() + medicalRecord.getLastName(), (T) medicalRecord);
         }
       }
     } catch (JsonProcessingException e) {
       e.printStackTrace();
     }
-    return map;
+    return (T) map;
   }
 
-  public void convertObjectToJson(String outputFilePath, List<Object> objectList) {
+  public void convertObjectToJson(String outputFilePath, List<T> objectList) {
     ObjectMapper mapper = new ObjectMapper();
     mapper.registerModule(new DateTimeModule());
 
