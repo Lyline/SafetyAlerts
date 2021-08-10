@@ -38,8 +38,8 @@ public class JsonConverter<T> {
         }
       } else if (inputFilePath.contains("fireStation")) {
         List<FireStation> value = Arrays.asList(mapper.readValue(data, FireStation[].class));
-        for (int i = 0; i < value.size(); i++) {
-          map.put(String.valueOf(i), (T) value.get(i));
+        for (FireStation fireStation : value) {
+          map.put(fireStation.getStation() + "-" + fireStation.getAddress(), (T) fireStation);
         }
       } else if (inputFilePath.contains("medicalRecord")) {
         List<MedicalRecord> value = Arrays.asList(mapper.readValue(data, MedicalRecord[].class));                                                //
