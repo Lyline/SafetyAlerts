@@ -1,6 +1,7 @@
 package fr.lyline.SafetyAlerts.repository;
 
 import fr.lyline.SafetyAlerts.model.Person;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -16,6 +17,11 @@ public class PersonRepoTest {
 
   Person person = new Person();
   private PersonRepoImpl classUnderTest = new PersonRepoImpl();
+
+  @BeforeEach
+  void setUp() {
+    classUnderTest = new PersonRepoImpl();
+  }
 
   @Test
   void getAllPersonsTest() {
