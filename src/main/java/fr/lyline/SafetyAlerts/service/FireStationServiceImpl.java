@@ -1,7 +1,7 @@
 package fr.lyline.SafetyAlerts.service;
 
 import fr.lyline.SafetyAlerts.model.FireStation;
-import fr.lyline.SafetyAlerts.repository.FireStationRepo;
+import fr.lyline.SafetyAlerts.repository.FireStationRepoImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +13,9 @@ import java.util.List;
 public class FireStationServiceImpl implements FireStationService {
 
   @Autowired
-  FireStationRepo repository;
+  FireStationRepoImpl repository;
 
-  public FireStationServiceImpl(FireStationRepo repository) {
+  public FireStationServiceImpl(FireStationRepoImpl repository) {
     this.repository = repository;
   }
 

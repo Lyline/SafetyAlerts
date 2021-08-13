@@ -1,7 +1,6 @@
 package fr.lyline.SafetyAlerts.service;
 
 import fr.lyline.SafetyAlerts.model.FireStation;
-import fr.lyline.SafetyAlerts.repository.FireStationRepo;
 import fr.lyline.SafetyAlerts.repository.FireStationRepoImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +21,7 @@ public class FireStationServiceTest {
   FireStationService classUnderTest;
 
   @Autowired
-  FireStationRepo repository;
+  FireStationRepoImpl repository;
 
   @BeforeEach
   void setUp() {

@@ -2,12 +2,14 @@ package fr.lyline.SafetyAlerts.repository;
 
 import fr.lyline.SafetyAlerts.model.MedicalRecord;
 import fr.lyline.SafetyAlerts.utils.JsonConverter;
+import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Repository
 public class MedicalRecordRepoImpl implements MedicalRecordRepo {
   JsonConverter data = new JsonConverter();
   private Map<String, MedicalRecord> medicalMap =

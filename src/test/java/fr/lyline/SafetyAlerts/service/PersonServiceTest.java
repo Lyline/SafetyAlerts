@@ -1,7 +1,6 @@
 package fr.lyline.SafetyAlerts.service;
 
 import fr.lyline.SafetyAlerts.model.Person;
-import fr.lyline.SafetyAlerts.repository.PersonRepo;
 import fr.lyline.SafetyAlerts.repository.PersonRepoImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +18,7 @@ public class PersonServiceTest {
   PersonService classUnderTest;
 
   @Autowired
-  PersonRepo repository;
+  PersonRepoImpl repository;
 
   @BeforeEach
   void setUp() {

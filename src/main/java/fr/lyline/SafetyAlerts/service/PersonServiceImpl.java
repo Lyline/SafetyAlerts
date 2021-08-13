@@ -1,7 +1,7 @@
 package fr.lyline.SafetyAlerts.service;
 
 import fr.lyline.SafetyAlerts.model.Person;
-import fr.lyline.SafetyAlerts.repository.PersonRepo;
+import fr.lyline.SafetyAlerts.repository.PersonRepoImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,9 +10,9 @@ import java.util.List;
 @Service
 public class PersonServiceImpl implements PersonService {
   @Autowired
-  private PersonRepo repository;
+  PersonRepoImpl repository;
 
-  public PersonServiceImpl(PersonRepo repository) {
+  public PersonServiceImpl(PersonRepoImpl repository) {
     this.repository = repository;
   }
 
