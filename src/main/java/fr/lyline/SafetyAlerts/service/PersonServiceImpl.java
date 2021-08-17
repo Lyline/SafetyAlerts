@@ -46,11 +46,11 @@ public class PersonServiceImpl implements PersonService {
     Person person = repository.findById(id);
 
     if (person != null) {
-      if (person.getAddress() != null) person.setAddress(personToUpDate.getAddress());
-      if (person.getCity() != null) person.setCity(personToUpDate.getCity());
-      if (person.getZip() != 0) person.setZip(personToUpDate.getZip());
-      if (person.getPhone() != null) person.setPhone(personToUpDate.getPhone());
-      if (person.getEmail() != null) person.setEmail(personToUpDate.getEmail());
+      if (!personToUpDate.getAddress().isEmpty()) person.setAddress(personToUpDate.getAddress());
+      if (!personToUpDate.getCity().isEmpty()) person.setCity(personToUpDate.getCity());
+      if (personToUpDate.getZip() != 0) person.setZip(personToUpDate.getZip());
+      if (!personToUpDate.getPhone().isEmpty()) person.setPhone(personToUpDate.getPhone());
+      if (!personToUpDate.getEmail().isEmpty()) person.setEmail(personToUpDate.getEmail());
 
       repository.update(id, person);
     }
