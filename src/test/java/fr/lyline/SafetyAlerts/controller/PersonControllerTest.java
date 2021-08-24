@@ -1,7 +1,7 @@
 package fr.lyline.SafetyAlerts.controller;
 
+import fr.lyline.SafetyAlerts.model.Person;
 import fr.lyline.SafetyAlerts.repository.PersonRepoImpl;
-import fr.lyline.SafetyAlerts.service.PersonService;
 import fr.lyline.SafetyAlerts.service.PersonServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ public class PersonControllerTest {
   private MockMvc mockMvc;
 
   @MockBean
-  private PersonService service;
+  private PersonServiceImpl service;
 
   @MockBean
   private PersonRepoImpl repository;
@@ -50,12 +50,38 @@ public class PersonControllerTest {
   }
 
   @Test
+  void getPersonReturnStatus400() throws Exception {
+    //Given
+    //When
+    mockMvc.perform(get("/person/John_Doe"))
+        .andExpect(status().isNotFound());
+    //Then
+  }
+
+  @Test
   void addPersonReturnStatus200() throws Exception {
     //Given
+    Person personMock = new Person();
+    personMock.setFirstName("John");
+    personMock.setLastName("Doe");
+    personMock.setAddress("New Address");
+    personMock.setCity("New City");
+    personMock.setZip(1234);
+    personMock.setPhone("123-345");
+    personMock.setEmail("john@aol.com");
 
     //When
-    mockMvc.perform(post("/person"))
-        .andExpect(status().isOk());
+    /*mockMvc.perform(post("/person")
+        .param("firstName", "John")
+        .param("lastName", "Doe")
+        .param("address", "newAddress")
+        .param("city", "newCity")
+        .param("zip", "124")
+        .param("phone", "123-123")
+        .param("email", "john@aol.com")
+        .andExpect(status().isCreated()));*/
+
+
     //Then
   }
 
