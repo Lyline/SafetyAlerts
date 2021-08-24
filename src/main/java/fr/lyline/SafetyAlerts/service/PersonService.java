@@ -9,11 +9,11 @@ public interface PersonService {
 
   List<Person> getAllPersons();
 
-  void addPerson(Person person);
+  Person addPerson(Person person);
 
   void addAllPersons(List<Person> list);
 
-  void upDatePerson(String id, Person personToUpDate);
+  Person upDatePerson(String id, Person personToUpDate);
 
   void removePerson(String id);
 

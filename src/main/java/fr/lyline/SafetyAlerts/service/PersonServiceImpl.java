@@ -27,11 +27,12 @@ public class PersonServiceImpl implements PersonService {
   }
 
   @Override
-  public void addPerson(Person person) {
+  public Person addPerson(Person person) {
     if (person.getFirstName() != null && person.getLastName() != null &&
         person.getAddress() != null && person.getCity() != null &&
         person.getZip() != 0 && person.getPhone() != null)
       repository.add(person);
+    return repository.findById(person.getFirstName() + person.getLastName());
   }
 
   @Override
@@ -42,18 +43,28 @@ public class PersonServiceImpl implements PersonService {
   }
 
   @Override
-  public void upDatePerson(String id, Person personToUpDate) {
+  public Person upDatePerson(String id, Person personToUpDate) {
     Person person = repository.findById(id);
 
     if (person != null) {
-      if (!personToUpDate.getAddress().isEmpty()) person.setAddress(personToUpDate.getAddress());
-      if (!personToUpDate.getCity().isEmpty()) person.setCity(personToUpDate.getCity());
-      if (personToUpDate.getZip() != 0) person.setZip(personToUpDate.getZip());
-      if (!personToUpDate.getPhone().isEmpty()) person.setPhone(personToUpDate.getPhone());
-      if (!personToUpDate.getEmail().isEmpty()) person.setEmail(personToUpDate.getEmail());
-
+      if (personToUpDate.getAddress() != null) {
+        person.setAddress(personToUpDate.getAddress());
+      }
+      if (personToUpDate.getCity() != null) {
+        person.setCity(personToUpDate.getCity());
+      }
+      if (personToUpDate.getZip() != 0) {
+        person.setZip(personToUpDate.getZip());
+      }
+      if (personToUpDate.getPhone() != null) {
+        person.setPhone(personToUpDate.getPhone());
+      }
+      if (personToUpDate.getEmail() != null) {
+        person.setEmail(personToUpDate.getEmail());
+      }
       repository.update(id, person);
     }
+    return person;
   }
 
   @Override
