@@ -23,7 +23,7 @@ public class PersonController {
     } else return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
   }
 
-  @GetMapping(value = "/person/{firstName}_{lastName}")
+  @GetMapping(value = "/persons/{firstName}_{lastName}")
   public ResponseEntity<Person> getPerson(@PathVariable(value = "firstName") String firstName,
                                           @PathVariable(value = "lastName") String lastName) {
     Person person = service.getPerson(firstName + lastName);
@@ -33,7 +33,7 @@ public class PersonController {
     } else return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
   }
 
-  @PostMapping("/person")
+  @PostMapping("/persons")
   public ResponseEntity<Person> addPerson(@RequestBody Person person) {
     Person personIsPresent = service.getPerson(person.getFirstName() + person.getLastName());
 
@@ -43,7 +43,7 @@ public class PersonController {
     } else return new ResponseEntity<>(personIsPresent, HttpStatus.CONFLICT);
   }
 
-  @PatchMapping("/person/{firstName}_{lastName}")
+  @PatchMapping("/persons/{firstName}_{lastName}")
   public ResponseEntity<Person> updatePerson(@PathVariable(value = "firstName") String firstName,
                                              @PathVariable(value = "lastName") String lastName,
                                              @RequestBody Person personToUpDate) {
@@ -57,7 +57,7 @@ public class PersonController {
     } else return new ResponseEntity<>(null, HttpStatus.NOT_MODIFIED);
   }
 
-  @DeleteMapping("/person/{firstName}_{lastName}")
+  @DeleteMapping("/persons/{firstName}_{lastName}")
   public ResponseEntity deletePerson(@PathVariable(value = "firstName") String firstName,
                                      @PathVariable(value = "lastName") String lastName) {
 
