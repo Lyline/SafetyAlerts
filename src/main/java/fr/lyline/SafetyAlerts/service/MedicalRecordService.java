@@ -9,11 +9,11 @@ public interface MedicalRecordService {
 
   List<MedicalRecord> getAllMedicalRecords();
 
-  void addMedicalRecord(MedicalRecord medicalRecord);
+  MedicalRecord addMedicalRecord(MedicalRecord medicalRecord);
 
   void addAllMedicalRecords(List<MedicalRecord> list);
 
-  void upDateMedicalRecord(String id, MedicalRecord medicalRecordToUpDate);
+  MedicalRecord upDateMedicalRecord(String id, MedicalRecord medicalRecordToUpDate);
 
   void removeMedicalRecordById(String id);
 

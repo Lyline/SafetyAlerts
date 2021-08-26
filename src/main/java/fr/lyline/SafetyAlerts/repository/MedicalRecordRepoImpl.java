@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 @Repository
 public class MedicalRecordRepoImpl implements MedicalRecordRepo {
   JsonConverter data = new JsonConverter();
-  private Map<String, MedicalRecord> medicalMap =
+  private final Map<String, MedicalRecord> medicalMap =
       (Map<String, MedicalRecord>) data.convertJsonToObject("src/main/resources/medicalRecord.json");
 
   @Override
@@ -26,8 +26,9 @@ public class MedicalRecordRepoImpl implements MedicalRecordRepo {
   }
 
   @Override
-  public void add(MedicalRecord medicalRecord) {
+  public MedicalRecord add(MedicalRecord medicalRecord) {
     medicalMap.put(medicalRecord.getFirstName() + medicalRecord.getLastName(), medicalRecord);
+    return medicalRecord;
   }
 
   @Override
@@ -42,9 +43,10 @@ public class MedicalRecordRepoImpl implements MedicalRecordRepo {
   }
 
   @Override
-  public void update(String id, MedicalRecord medicalRecordToUpDate) {
+  public MedicalRecord update(String id, MedicalRecord medicalRecordToUpDate) {
     MedicalRecord medicalRecord = medicalMap.get(id);
     medicalMap.replace(id, medicalRecord, medicalRecordToUpDate);
+    return medicalRecord;
   }
 
   @Override

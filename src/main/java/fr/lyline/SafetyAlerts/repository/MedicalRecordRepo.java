@@ -9,11 +9,11 @@ public interface MedicalRecordRepo {
 
   MedicalRecord findById(String firstNameLastName);
 
-  void add(MedicalRecord medicalRecord);
+  MedicalRecord add(MedicalRecord medicalRecord);
 
   void addAll(List<MedicalRecord> list);
 
-  void update(String id, MedicalRecord medicalRecordToUpDate);
+  MedicalRecord update(String id, MedicalRecord medicalRecordToUpDate);
 
   void deleteById(String id);
 

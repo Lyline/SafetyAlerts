@@ -26,12 +26,12 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
   }
 
   @Override
-  public void addMedicalRecord(MedicalRecord medicalRecord) {
+  public MedicalRecord addMedicalRecord(MedicalRecord medicalRecord) {
     if (medicalRecord.getFirstName() != null
         && medicalRecord.getLastName() != null
         && medicalRecord.getBirthdate() != null) {
-      repository.add(medicalRecord);
-    }
+      return repository.add(medicalRecord);
+    } else return null;
   }
 
   @Override
@@ -40,7 +40,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
   }
 
   @Override
-  public void upDateMedicalRecord(String id, MedicalRecord medicalRecordToUpDate) {
+  public MedicalRecord upDateMedicalRecord(String id, MedicalRecord medicalRecordToUpDate) {
     MedicalRecord medicalRecord = repository.findById(id);
     if (medicalRecord != null) {
       if (medicalRecordToUpDate.getBirthdate() != null) {
@@ -53,7 +53,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
         medicalRecord.setAllergies(medicalRecordToUpDate.getAllergies());
       }
     }
-    repository.update(id, medicalRecord);
+    return repository.update(id, medicalRecord);
   }
 
   @Override
