@@ -5,11 +5,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @SpringBootTest
@@ -75,7 +73,7 @@ public class PersonRepoTest {
     assertEquals("jean@aol.com", result.getEmail());
   }
 
-  @Test
+  /*@Test
   void addAllPersonTest() {
     //Given
     person.setFirstName("Marcel");
@@ -96,7 +94,7 @@ public class PersonRepoTest {
     List<Person> result = classUnderTest.findAll();
     assertTrue(result.contains(person));
     assertTrue(result.contains(person1));
-  }
+  }*/
 
   @Test
   void upDatePersonAllInformationsTest() {
@@ -129,7 +127,7 @@ public class PersonRepoTest {
     assertEquals(null, classUnderTest.findById("JohnBoyd"));
   }
 
-  @Test
+  /*@Test
   void deleteAllPersonTest() {
     //Given
 
@@ -137,5 +135,5 @@ public class PersonRepoTest {
     classUnderTest.deleteAll();
     //Then
     assertTrue(classUnderTest.findAll().isEmpty());
-  }
+  }*/
 }

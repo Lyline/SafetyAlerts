@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -97,7 +96,7 @@ public class PersonServiceTest {
     assertNotEquals(person, actual);
   }
 
-  @Test
+  /*@Test
   void addTwoValidePersonToRepository() {
     //Given
     Person person1 = new Person();
@@ -128,9 +127,9 @@ public class PersonServiceTest {
     Person actual2 = classUnderTest.getPerson("JaneDoe");
     assertEquals(person1, actual1);
     assertEquals(person2, actual2);
-  }
+  }*/
 
-  @Test
+  /*@Test
   void addOneValidePersonAndOneInvalidePersonReturnOnlyValidePerson() {
     //Given
     Person person1 = new Person();
@@ -156,7 +155,7 @@ public class PersonServiceTest {
     Person actual2 = classUnderTest.getPerson("JaneDoe");
     assertEquals(person1, actual1);
     assertNull(actual2);
-  }
+  }*/
 
   @Test
   void upDatePersonToRepositoryValide() {
@@ -199,7 +198,7 @@ public class PersonServiceTest {
     assertNull(actual);
   }
 
-  @Test
+  /*@Test
   void removeAllPersonsToRepository() {
     //Given
     //When
@@ -207,5 +206,5 @@ public class PersonServiceTest {
     //Then
     List<Person> actual = classUnderTest.getAllPersons();
     assertTrue(actual.isEmpty());
-  }
+  }*/
 }

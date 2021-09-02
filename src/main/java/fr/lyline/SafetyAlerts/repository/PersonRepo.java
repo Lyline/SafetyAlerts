@@ -9,11 +9,11 @@ public interface PersonRepo {
 
   Person findById(String firstNameLastName);
 
-  void add(Person person);
+  Person add(Person person);
 
   void addAll(List<Person> list);
 
-  void update(String id, Person personToUpDate);
+  boolean update(String id, Person personToUpDate);
 
   void deleteById(String id);
 

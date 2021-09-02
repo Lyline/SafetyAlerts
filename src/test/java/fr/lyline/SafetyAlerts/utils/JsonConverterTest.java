@@ -247,7 +247,7 @@ public class JsonConverterTest {
     String actual = classUnderTest.readData(filePath);
     //Then
     assertFalse(actual.isEmpty());
-    assertEquals("[{\"Test\": \"value\"}]", actual);
+    assertEquals("[\n{\n\"Test\": \"value\"\n}\n]", actual);
   }
 
   @Test

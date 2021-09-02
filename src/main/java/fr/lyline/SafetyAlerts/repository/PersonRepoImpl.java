@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 @Repository
 public class PersonRepoImpl implements PersonRepo {
   JsonConverter data = new JsonConverter();
-  private Map<String, Person> personMap = (Map<String, Person>) data.convertJsonToObject("src/main/resources/person.json");
+  private final Map<String, Person> personMap = (Map<String, Person>) data.convertJsonToObject("src/main/resources/person.json");
 
   public PersonRepoImpl() {
   }
@@ -28,8 +28,9 @@ public class PersonRepoImpl implements PersonRepo {
   }
 
   @Override
-  public void add(Person person) {
+  public Person add(Person person) {
     personMap.put(person.getFirstName() + person.getLastName(), person);
+    return personMap.get(person.getFirstName() + person.getLastName());
   }
 
   @Override
@@ -44,9 +45,9 @@ public class PersonRepoImpl implements PersonRepo {
   }
 
   @Override
-  public void update(String id, Person personToUpDate) {
+  public boolean update(String id, Person personToUpDate) {
     Person person = findById(id);
-    personMap.replace(id, person, personToUpDate);
+    return personMap.replace(id, person, personToUpDate);
   }
 
   @Override
