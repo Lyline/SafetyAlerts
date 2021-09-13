@@ -4,12 +4,14 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import fr.lyline.SafetyAlerts.utils.DateTimeDeserializer;
 import fr.lyline.SafetyAlerts.utils.DateTimeSerializer;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.joda.time.DateTime;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class MedicalRecord {
   private String firstName;
   private String lastName;
@@ -19,4 +21,6 @@ public class MedicalRecord {
   private String[] medications;
   private String[] allergies;
 
+  public MedicalRecord() {
+  }
 }
