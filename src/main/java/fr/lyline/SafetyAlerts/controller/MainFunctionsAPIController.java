@@ -1,5 +1,7 @@
 package fr.lyline.SafetyAlerts.controller;
 
+import fr.lyline.SafetyAlerts.ObjectMapper.ChildAlert;
+import fr.lyline.SafetyAlerts.ObjectMapper.PersonInfo;
 import fr.lyline.SafetyAlerts.service.MainFunctionsAPIService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,7 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,33 +38,29 @@ public class MainFunctionsAPIController {
   }
 
   @GetMapping("/personInfo")
-  public ResponseEntity<Map<String, String>> getPersonInfo(@RequestParam() String firstName,
-                                                           @RequestParam() String lastName) {
-    Map<String, String> response = service.getPersonInfo(firstName, lastName);
+  public ResponseEntity<PersonInfo> getPersonInfo(@RequestParam() String firstName,
+                                                  @RequestParam() String lastName) {
+    PersonInfo response = service.getPersonInfo(firstName, lastName);
 
-    if (response == null) {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-
-    if (!response.isEmpty()) {
+    if (response != null) {
       return new ResponseEntity<>(response, HttpStatus.OK);
     } else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
 
   @GetMapping("/childAlert")
-  public ResponseEntity<Map<String, List<HashMap<String, String>>>> getChildAlert(
+  public ResponseEntity<List<ChildAlert>> getChildAlert(
       @RequestParam() String address) {
-    Map<String, List<HashMap<String, String>>> response = service.getChildAlert(address);
+    List<ChildAlert> response = service.getChildAlert(address);
 
-    if (!response.get("children").isEmpty()) {
+    if (!response.isEmpty()) {
       return new ResponseEntity<>(response, HttpStatus.OK);
-    } else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    } else return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
   @GetMapping("/flood/stations")
-  public ResponseEntity<Map<Integer, Map<String, List<Map<String, String>>>>> getFloodStation(
+  public ResponseEntity<Map<Integer, List<Map<String, List<PersonInfo>>>>> getFloodStation(
       @RequestParam(value = "stations") int[] stationList) {
-    Map<Integer, Map<String, List<Map<String, String>>>> response = service.getResidentsByAddressFromFireStationList(stationList);
+    Map<Integer, List<Map<String, List<PersonInfo>>>> response = service.getResidentsContactFromToFireStation(stationList);
 
     if (!response.isEmpty()) {
       return new ResponseEntity<>(response, HttpStatus.OK);
@@ -81,9 +78,9 @@ public class MainFunctionsAPIController {
   }
 
   @GetMapping("/fire")
-  public ResponseEntity<Map<String, Object>> getPersonsInfoByAddress(
+  public ResponseEntity<Map<String, List<Object>>> getPersonsInfoByAddress(
       @RequestParam() String address) {
-    Map<String, Object> response = service.getPersonsInfoByAddress(address);
+    Map<String, List<Object>> response = service.getPersonsInfoByAddress(address);
 
     if (!response.isEmpty()) {
       return new ResponseEntity<>(response, HttpStatus.OK);
