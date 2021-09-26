@@ -1,5 +1,8 @@
 package fr.lyline.SafetyAlerts.service;
 
+import com.google.inject.internal.util.ImmutableList;
+import fr.lyline.SafetyAlerts.ObjectMapper.ChildAlert;
+import fr.lyline.SafetyAlerts.ObjectMapper.PersonInfo;
 import fr.lyline.SafetyAlerts.model.FireStation;
 import fr.lyline.SafetyAlerts.model.MedicalRecord;
 import fr.lyline.SafetyAlerts.model.Person;
@@ -13,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
 
 @Service
 public class MainFunctionsAPIService {
@@ -60,111 +62,91 @@ public class MainFunctionsAPIService {
     return list;
   }
 
-  public Map<String, String> getPersonInfo(String firstName, String lastName) {
+  public PersonInfo getPersonInfo(String firstName, String lastName) {
+    PersonInfo personInfo;
 
-    Map<String, String> personInfo;
     Person personData = personRepo.findById(firstName + lastName);
     MedicalRecord medicalRecordData = medicalRecordRepo.findById(firstName + lastName);
-    personInfo = new HashMap<>();
 
-    if (personData != null && medicalRecordData != null) {
-      String age = String.valueOf(Years.yearsBetween(medicalRecordData.getBirthdate(), DateTime.now()).getYears());
+    if (personData.getFirstName() != null && medicalRecordData.getFirstName() != null) {
+      int age = Years.yearsBetween(medicalRecordData.getBirthdate(), DateTime.now()).getYears();
 
-      personInfo.put("firstName", personData.getFirstName());
-      personInfo.put("lastName", personData.getLastName());
-      personInfo.put("age", age);
-      personInfo.put("email", personData.getEmail());
-      personInfo.put("medications", Arrays.asList(medicalRecordData.getMedications()).toString());
-      personInfo.put("allergies", Arrays.asList(medicalRecordData.getAllergies()).toString());
-    }
-    return personInfo;
+      personInfo = new PersonInfo(personData.getFirstName(), personData.getLastName(), personData.getPhone(),
+          personData.getEmail(), age, medicalRecordData.getMedications(), medicalRecordData.getAllergies());
+      return personInfo;
+    } else return null;
   }
 
-  public Map<String, List<HashMap<String, String>>> getChildAlert(String address) {
+  public List<ChildAlert> getChildAlert(String address) {
     List<Person> persons = personRepo.findAll();
-    List<MedicalRecord> medicalRecordResidents = new ArrayList<>();
 
-    List<HashMap<String, String>> childrenList = new ArrayList<>();
-    List<HashMap<String, String>> adultList = new ArrayList<>();
-    Map<String, List<HashMap<String, String>>> family = new HashMap<>();
+    List<Person> children = new ArrayList<>();
+    List<Person> adults = new ArrayList<>();
+    List<String> ages = new ArrayList<>();
+
+    List<ChildAlert> result = new ArrayList<>();
 
     List<Person> residents = persons.stream()
         .filter(x -> x.getAddress().equals(address))
         .collect(Collectors.toList());
 
-    for (Person p : residents) {
-      MedicalRecord resident = medicalRecordRepo.findById(p.getFirstName() + p.getLastName());
-      medicalRecordResidents.add(resident);
+    for (Person resident : residents) {
+      MedicalRecord person = medicalRecordRepo.findById(resident.getFirstName() + resident.getLastName());
+      int age = Years.yearsBetween(person.getBirthdate(), DateTime.now()).getYears();
+
+      if (age <= 18) {
+        ages.add(String.valueOf(age));
+        children.add(resident);
+      } else adults.add(resident);
     }
 
-    List<MedicalRecord> children = medicalRecordResidents.stream()
-        .filter(x -> Years.yearsBetween(x.getBirthdate(), DateTime.now()).getYears() <= 18)
-        .collect(Collectors.toList());
-
-    List<MedicalRecord> adults = medicalRecordResidents.stream()
-        .filter(x -> Years.yearsBetween(x.getBirthdate(), DateTime.now()).getYears() > 18)
-        .collect(Collectors.toList());
-
-    for (MedicalRecord child : children) {
-      HashMap<String, String> childInfo = new HashMap<>();
-      String age = String.valueOf(Years.yearsBetween(child.getBirthdate(), DateTime.now()).getYears());
-
-      childInfo.put("firstName", child.getFirstName());
-      childInfo.put("lastName", child.getLastName());
-      childInfo.put("age", age);
-
-      childrenList.add(childInfo);
+    for (int i = 0; i < children.size(); i++) {
+      result.add(new ChildAlert(children.get(i), ages.get(i), adults));
     }
-    family.put("children", childrenList);
 
-    for (MedicalRecord adult : adults) {
-      HashMap<String, String> adultInfo = new HashMap<>();
-
-      adultInfo.put("firstName", adult.getFirstName());
-      adultInfo.put("lastName", adult.getLastName());
-
-      adultList.add(adultInfo);
-    }
-    family.put("adults", adultList);
-
-    return family;
+    return result;
   }
 
-  public Map<Integer, Map<String, List<Map<String, String>>>> getResidentsByAddressFromFireStationList(int[] stationList) {
-    List<FireStation> stationData = fireStationRepo.findAll();
-    List<Person> personData = personRepo.findAll();
+  public Map<Integer, List<Map<String, List<PersonInfo>>>> getResidentsContactFromToFireStation(int[] stationList) {
+    List<Person> persons = personRepo.findAll();
+    List<FireStation> fireStations = fireStationRepo.findAll();
 
-    List<String> addresses;
-    Map<String, List<Map<String, String>>> residents = new HashMap<>();
-    Map<Integer, Map<String, List<Map<String, String>>>> addressesByStation = new HashMap<>();
 
-    for (int i = 0; i < stationList.length; i++) {
-      int finalI = i;
-      addresses = stationData.stream()
-          .filter(x -> x.getStation() == stationList[finalI])
+    Map<Integer, List<Map<String, List<PersonInfo>>>> result = new HashMap<>();
+
+    for (int stationNumber : stationList) {
+
+      //Get a list of addresses from to the station
+      List<String> addresses = fireStations.stream()
+          .filter(x -> x.getStation() == stationNumber)
           .map(FireStation::getAddress)
           .collect(Collectors.toList());
 
-      for (String address : addresses) {
-        List<Map<String, String>> personList = new ArrayList<>();
+      Map<String, List<PersonInfo>> residentsByAddress = new HashMap<>();
 
-        for (Person person : personData) {
-          Map<String, String> personMap = new HashMap<>();
+      //Sort and collect people by address
+      for (String address : addresses) {
+
+        List<PersonInfo> residents = new ArrayList<>();
+
+        //Collect people leaving in to this address
+        for (Person person : persons) {
+
           if (person.getAddress().equals(address)) {
-            personMap.put("firstName", person.getFirstName());
-            personMap.put("lastName", person.getLastName());
-            personMap.put("phone", person.getPhone());
-            personList.add(personMap);
-          }
-          if (!personMap.isEmpty()) {
-            residents.put(person.getAddress(), personList);
+            MedicalRecord medic = medicalRecordRepo.findById(person.getFirstName() + person.getLastName());
+            PersonInfo personInfo = new PersonInfo().add(person, medic);
+            residents.add(personInfo);
           }
         }
-        addressesByStation.put(stationList[finalI], residents);
+        if (!residents.isEmpty()) {
+          residentsByAddress.put(address, residents);
+        }
+      }
+      if (!residentsByAddress.isEmpty()) {
+        result.put(stationNumber, ImmutableList.of(residentsByAddress));
       }
     }
-
-    return addressesByStation;
+    return result;
   }
 
   public Map<String, List<Map<String, String>>> getPersonsInfoByStation(int stationNumber) {
@@ -212,22 +194,24 @@ public class MainFunctionsAPIService {
     countMap.put("adults", String.valueOf(adultCount));
     count.add(countMap);
 
-    informationsList.put("persons", personList);
-    informationsList.put("count", count);
+    if (!personList.isEmpty() && !count.isEmpty()) {
+      informationsList.put("persons", personList);
+      informationsList.put("count", count);
+    }
     return informationsList;
   }
 
-  public Map<String, Object> getPersonsInfoByAddress(String address) {
+  public Map<String, List<Object>> getPersonsInfoByAddress(String address) {
     List<Person> personData = personRepo.findAll();
     List<FireStation> fireStationData = fireStationRepo.findAll();
-    Map<String, Object> result = new HashMap<>();
+    Map<String, List<Object>> result = new HashMap<>();
     List<Object> personInfoList = new ArrayList<>();
 
     List<Person> residentsByAddress = personData.stream()
         .filter(x -> x.getAddress().equals(address))
         .collect(Collectors.toList());
 
-    List<Integer> fireStation = fireStationData.stream()
+    List<Integer> fireStations = fireStationData.stream()
         .filter(x -> x.getAddress().equals(address))
         .map(FireStation::getStation)
         .collect(Collectors.toList());
@@ -248,10 +232,14 @@ public class MainFunctionsAPIService {
       resident.put("lastName", person.getLastName());
       resident.put("information", personInfo);
 
-      personInfoList.add(resident);
+      if (!personInfo.isEmpty() && !resident.isEmpty()) {
+        personInfoList.add(resident);
+      }
     }
-    result.put("firestation", fireStation);
-    result.put("persons", personInfoList);
+    if (!personInfoList.isEmpty()) {
+      result.put("firestation", List.of(fireStations));
+      result.put("persons", personInfoList);
+    }
 
     return result;
   }
