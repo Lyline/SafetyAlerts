@@ -1,139 +1,175 @@
 package fr.lyline.SafetyAlerts.repository;
 
 import fr.lyline.SafetyAlerts.model.Person;
+import fr.lyline.SafetyAlerts.utils.JsonConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-
-@SpringBootTest
 public class PersonRepoTest {
 
-  Person person = new Person();
-  private PersonRepoImpl classUnderTest = new PersonRepoImpl();
+  private final JsonConverter data = mock(JsonConverter.class);
+  private final PersonRepoImpl classUnderTest = new PersonRepoImpl(data);
+  private final List<Person> personList = new ArrayList<>();
+  String fileJsonPath = "src/main/resources/person.json";
+  Person person1 = new Person("Homer", "Simpson", "742 Evergreen Terrace",
+      "Springfield", 80085, "123-456", "homer@test.com");
+  Person person2 = new Person("Marge", "Simpson", "742 Evergreen Terrace",
+      "Springfield", 80085, "123-456", "homer@test.com");
+  Person person3 = new Person("Bart", "Simpson", "742 Evergreen Terrace",
+      "Springfield", 80085, "123-456", "homer@test.com");
 
   @BeforeEach
   void setUp() {
-    classUnderTest = new PersonRepoImpl();
+    personList.add(person1);
+    personList.add(person2);
+    personList.add(person3);
   }
 
   @Test
-  void getAllPersonsTest() {
+  void whenGetAllPersonsTestReturnThreePersons() {
     //Given
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(personList);
 
     //When
-    List result = classUnderTest.findAll();
+    List<Person> actual = classUnderTest.findAll();
+
     //Then
-    assertEquals(23, result.size());
-    assertEquals("class fr.lyline.SafetyAlerts.model.Person", result.get(1).getClass().toString());
+    assertEquals(3, actual.size());
+
   }
 
   @Test
-  void getPersonByIdTest() {
+  void whenGetAllPersonsTestReturnAnEmptyList() {
     //Given
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(List.of());
 
     //When
-    Person result = classUnderTest.findById("JohnBoyd");
+    List<Person> actual = classUnderTest.findAll();
+
     //Then
-    assertEquals("John", result.getFirstName());
-    assertEquals("Boyd", result.getLastName());
-    assertEquals("1509 Culver St", result.getAddress());
-    assertEquals("Culver", result.getCity());
-    assertEquals(97451, result.getZip());
-    assertEquals("841-874-6512", result.getPhone());
-    assertEquals("jaboyd@email.com", result.getEmail());
+    assertTrue(actual.isEmpty());
+
   }
 
   @Test
-  void addPersonTest() {
+  void whenGetPersonByIdTestReturnTheGoodPerson() {
     //Given
-    person.setFirstName("Jean");
-    person.setLastName("Bon");
-    person.setAddress("666 HellRoad");
-    person.setCity("HellCity");
-    person.setZip(123456);
-    person.setPhone("123-456-789");
-    person.setEmail("jean@aol.com");
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(personList);
 
     //When
-    classUnderTest.add(person);
+    Person actual = classUnderTest.findById("Bart", "Simpson");
 
     //Then
-    Person result = classUnderTest.findById("JeanBon");
-    assertEquals("Jean", result.getFirstName());
-    assertEquals("Bon", result.getLastName());
-    assertEquals("666 HellRoad", result.getAddress());
-    assertEquals("HellCity", result.getCity());
-    assertEquals(123456, result.getZip());
-    assertEquals("123-456-789", result.getPhone());
-    assertEquals("jean@aol.com", result.getEmail());
-  }
-
-  /*@Test
-  void addAllPersonTest() {
-    //Given
-    person.setFirstName("Marcel");
-    person.setLastName("Dugenou");
-
-    Person person1 = new Person();
-    person1.setFirstName("Jane");
-    person1.setLastName("Doe");
-
-    List<Person> list = new ArrayList<>();
-    list.add(person);
-    list.add(person1);
-
-    //When
-    classUnderTest.addAll(list);
-
-    //Then
-    List<Person> result = classUnderTest.findAll();
-    assertTrue(result.contains(person));
-    assertTrue(result.contains(person1));
-  }*/
-
-  @Test
-  void upDatePersonAllInformationsTest() {
-    //Given
-    person = classUnderTest.findById("JohnBoyd");
-    person.setAddress("new address");
-    person.setZip(987654);
-    person.setCity("new city");
-
-    //When
-    classUnderTest.update("JohnBoyd", person);
-
-    //Then
-    Person result = classUnderTest.findById("JohnBoyd");
-
-    assertEquals("new address", result.getAddress());
-    assertEquals("new city", result.getCity());
-    assertEquals(987654, result.getZip());
-    assertEquals("841-874-6512", result.getPhone());
-    assertEquals("jaboyd@email.com", result.getEmail());
+    assertSame(person3, actual);
   }
 
   @Test
-  void deletePersonTest() {
+  void whenGetPersonByIdTestReturnNull() {
     //Given
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(personList);
 
     //When
-    classUnderTest.deleteById("JohnBoyd");
+    Person actual = classUnderTest.findById("John", "Doe");
+
     //Then
-    assertEquals(null, classUnderTest.findById("JohnBoyd"));
+    assertNull(actual);
   }
 
-  /*@Test
-  void deleteAllPersonTest() {
+  @Test
+  void whenAddPersonReturnTrueAndAddNewPerson() {
     //Given
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(personList);
+    Person person = new Person("John", "Doe", "newAddress",
+        "NewCity", 1, "123-456", "john@test.com");
+    //When
+    boolean result = classUnderTest.add(person);
+
+    //Then
+    Person actual = classUnderTest.findById("John", "Doe");
+    assertTrue(result);
+    assertSame(person, actual);
+  }
+
+  @Test
+  void whenAddExistingPersonReturnFalse() {
+    //Given
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(personList);
 
     //When
-    classUnderTest.deleteAll();
+    boolean result = classUnderTest.add(person1);
+
     //Then
-    assertTrue(classUnderTest.findAll().isEmpty());
-  }*/
+    Person actual = classUnderTest.findById("Homer", "Simpson");
+    assertFalse(result);
+    assertSame(person1, actual);
+  }
+
+
+  @Test
+  void whenUpDateExistingPersonReturnTrue() {
+    //Given
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(personList);
+    Person personToUpdate = new Person("Homer", "Simpson", "NoAddress",
+        "NoCity", 1, "123-456", "");
+
+    //When
+    boolean result = classUnderTest.update(personToUpdate);
+
+    //Then
+    Person actual = classUnderTest.findById("Homer", "Simpson");
+    assertTrue(result);
+    assertSame(personToUpdate, actual);
+  }
+
+  @Test
+  void whenUpDatePersonNotExistingReturnFalse() {
+    //Given
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(personList);
+    Person personToUpdate = new Person("John", "Doe", "NoAddress",
+        "NoCity", 1, "123-456", "");
+
+    //When
+    boolean result = classUnderTest.update(personToUpdate);
+
+    //Then
+    Person actual = classUnderTest.findById("John", "Doe");
+    assertFalse(result);
+    assertNull(actual);
+  }
+
+  @Test
+  void whenDeleteExistingPersonReturnTrue() {
+    //Given
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(personList);
+    int personsCountBeforeDelete = personList.size();
+
+    //When
+    boolean result = classUnderTest.deleteByFirstNameAndLastName("Homer", "Simpson");
+    int personsCountAfterDelete = personList.size();
+
+    //Then
+    assertEquals(3, personsCountBeforeDelete);
+    assertTrue(result);
+    assertEquals(2, personsCountAfterDelete);
+    assertNull(classUnderTest.findById("Homer", "Simpson"));
+  }
+
+  @Test
+  void whenDeleteNotExistingPersonReturnFalse() {
+    //Given
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(personList);
+
+    //When
+    boolean result = classUnderTest.deleteByFirstNameAndLastName("John", "Doe");
+
+    //Then
+    assertFalse(result);
+  }
 }

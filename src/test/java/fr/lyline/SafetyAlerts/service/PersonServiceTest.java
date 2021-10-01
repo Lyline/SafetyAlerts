@@ -4,207 +4,160 @@ import fr.lyline.SafetyAlerts.model.Person;
 import fr.lyline.SafetyAlerts.repository.PersonRepoImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-@SpringBootTest
 public class PersonServiceTest {
-  @Autowired
-  PersonService classUnderTest;
-
-  @Autowired
-  PersonRepoImpl repository;
+  private final List<Person> personList = new ArrayList<>();
+  PersonRepoImpl repository = mock(PersonRepoImpl.class);
+  PersonServiceImpl classUnderTest = new PersonServiceImpl(repository);
+  Person person1 = new Person("Homer", "Simpson", "742 Evergreen Terrace",
+      "Springfield", 80085, "123-456", "homer@test.com");
+  Person person2 = new Person("Marge", "Simpson", "742 Evergreen Terrace",
+      "Springfield", 80085, "123-456", "homer@test.com");
+  Person person3 = new Person("Bart", "Simpson", "742 Evergreen Terrace",
+      "Springfield", 80085, "123-456", "homer@test.com");
 
   @BeforeEach
   void setUp() {
-    repository = new PersonRepoImpl();
-    classUnderTest = new PersonServiceImpl(repository);
+    personList.add(person1);
+    personList.add(person2);
+    personList.add(person3);
   }
 
   @Test
-  void getPersonByIdValidate() {
+  void whenGetExistingPersonReturnThisPerson() {
     //Given
+    when(repository.findById("Homer", "Simpson")).thenReturn(personList.get(0));
+
     //When
-    Person actual = classUnderTest.getPerson("JohnBoyd");
+    Person actual = classUnderTest.getPerson("Homer", "Simpson");
+
     //Then
-    assertEquals("John", actual.getFirstName());
-    assertEquals("Boyd", actual.getLastName());
+    assertSame(person1, actual);
   }
 
   @Test
-  void getPersonByIdNotValidate() {
+  void whenGetNotExistingPersonReturnNull() {
     //Given
+    when(repository.findById("John", "Doe")).thenReturn(null);
+
     //When
-    Person actual = classUnderTest.getPerson("JohnDoe");
+    Person actual = classUnderTest.getPerson("John", "Doe");
+
     //Then
     assertNull(actual);
   }
 
   @Test
-  void getAllPersonValidate() {
+  void whenGetAllPersonsReturnThreePersons() {
     //Given
+    when(repository.findAll()).thenReturn(personList);
+
     //When
     List<Person> actual = classUnderTest.getAllPersons();
+
     //Then
-    assertEquals(23, actual.size());
+    assertEquals(3, actual.size());
+    assertEquals("Homer", actual.get(0).getFirstName());
+    assertEquals("Marge", actual.get(1).getFirstName());
+    assertEquals("Bart", actual.get(2).getFirstName());
   }
 
   @Test
-  void getAllPersonReturnEmptyList() {
+  void whenGetAllPersonsNoExitingReturnAnEmptyList() {
     //Given
-    repository.deleteAll();
+    when(repository.findAll()).thenReturn(List.of());
+
     //When
     List<Person> actual = classUnderTest.getAllPersons();
+
     //Then
     assertTrue(actual.isEmpty());
   }
 
   @Test
-  void addPersonToTheRepositoryValidate() {
+  void whenAddNewValidatePersonReturnTrue() {
     //Given
-    Person person = new Person();
-    person.setFirstName("John");
-    person.setLastName("Doe");
-    person.setAddress("NoWhere");
-    person.setCity("New City");
-    person.setZip(123456);
-    person.setPhone("123-456");
-    person.setEmail("john@aol.com");
 
+    Person person = new Person("John", "Doe", "Address",
+        "City", 1, "123-456", "john@test.com");
+
+    when(repository.add(person)).thenReturn(true);
     //When
-    classUnderTest.addPerson(person);
+    boolean actual = classUnderTest.addPerson(person);
 
     //Then
-    Person actual = classUnderTest.getPerson("JohnDoe");
-    assertEquals(person, actual);
+    assertTrue(actual);
   }
 
   @Test
-  void addPersonToRepositoryNotValidate() {
+  void whenAddNewNotValidatePersonReturnFalse() {
     //Given
-    Person person = new Person();
-    person.setFirstName("John");
-    person.setLastName("Doe");
+    when(repository.findAll()).thenReturn(personList);
+
+    Person person = new Person("John", "Doe", "",
+        "", 1, "", "");
+
     //When
-    classUnderTest.addPerson(person);
+    boolean actual = classUnderTest.addPerson(person);
+
     //Then
-    Person actual = classUnderTest.getPerson("JohnDoe");
-    assertNotEquals(person, actual);
-  }
-
-  /*@Test
-  void addTwoValidePersonToRepository() {
-    //Given
-    Person person1 = new Person();
-    person1.setFirstName("John");
-    person1.setLastName("Doe");
-    person1.setAddress("NoWhere");
-    person1.setCity("New City");
-    person1.setZip(123456);
-    person1.setPhone("123-456");
-    person1.setEmail("john@aol.com");
-
-    Person person2 = new Person();
-    person2.setFirstName("Jane");
-    person2.setLastName("Doe");
-    person2.setAddress("NoWhere");
-    person2.setCity("New City");
-    person2.setZip(123456);
-    person2.setPhone("123-456");
-    person2.setEmail("jane@aol.com");
-
-    List<Person> list = new ArrayList<>();
-    list.add(person1);
-    list.add(person2);
-    //When
-    classUnderTest.addAllPersons(list);
-    //Then
-    Person actual1 = classUnderTest.getPerson("JohnDoe");
-    Person actual2 = classUnderTest.getPerson("JaneDoe");
-    assertEquals(person1, actual1);
-    assertEquals(person2, actual2);
-  }*/
-
-  /*@Test
-  void addOneValidePersonAndOneInvalidePersonReturnOnlyValidePerson() {
-    //Given
-    Person person1 = new Person();
-    person1.setFirstName("John");
-    person1.setLastName("Doe");
-    person1.setAddress("NoWhere");
-    person1.setCity("New City");
-    person1.setZip(123456);
-    person1.setPhone("123-456");
-    person1.setEmail("john@aol.com");
-
-    Person person2 = new Person();
-    person2.setFirstName("Jane");
-    person2.setLastName("Doe");
-
-    List<Person> list = new ArrayList<>();
-    list.add(person1);
-    list.add(person2);
-    //When
-    classUnderTest.addAllPersons(list);
-    //Then
-    Person actual1 = classUnderTest.getPerson("JohnDoe");
-    Person actual2 = classUnderTest.getPerson("JaneDoe");
-    assertEquals(person1, actual1);
-    assertNull(actual2);
-  }*/
-
-  @Test
-  void upDatePersonToRepositoryValide() {
-    //Given
-    Person personToUpDate = classUnderTest.getPerson("JohnBoyd");
-    personToUpDate.setAddress("New Address");
-    personToUpDate.setPhone("000-000");
-    //When
-    classUnderTest.upDatePerson("JohnBoyd", personToUpDate);
-    //Then
-    Person actual = classUnderTest.getPerson("JohnBoyd");
-    assertEquals(personToUpDate, actual);
+    assertFalse(actual);
   }
 
   @Test
-  void upDatePersonNotExistToRepositoryNotValidate() {
+  void whenUpdateExistingPersonReturnTrue() {
     //Given
-    Person person = new Person();
-    person.setFirstName("John");
-    person.setLastName("Doe");
-    person.setAddress("NoWhere");
-    person.setCity("New City");
-    person.setZip(123456);
-    person.setPhone("123-456");
-    person.setEmail("john@aol.com");
+    when(repository.findById("Homer", "Simpson")).thenReturn(personList.get(0));
+    Person personToUpdate = new Person("Homer", "Simpson",
+        "newAddress", "NewCity", 1, "123", "homer@sprinfield.com");
     //When
-    classUnderTest.upDatePerson("JohnDoe", person);
+    boolean actual = classUnderTest.upDatePerson(personToUpdate);
+
     //Then
-    Person actual = classUnderTest.getPerson("JohnDoe");
-    assertNull(actual);
+    assertTrue(actual);
   }
 
   @Test
-  void removePersonToRepository() {
+  void whenUpdateNotExistingPersonReturnFalse() {
     //Given
+    when(repository.findById("Homer", "Simpson")).thenReturn(personList.get(0));
+    Person personToUpdate = new Person("Maggie", "Simpson",
+        "newAddress", "NewCity", 1, "123", "homer@test.com");
     //When
-    classUnderTest.removePerson("JohnBoyd");
+    boolean actual = classUnderTest.upDatePerson(personToUpdate);
+
     //Then
-    Person actual = classUnderTest.getPerson("JohnBoyd");
-    assertNull(actual);
+    assertFalse(actual);
   }
 
-  /*@Test
-  void removeAllPersonsToRepository() {
+  @Test
+  void whenDeleteExistingPersonReturnTrue() {
     //Given
+    when(repository.findById("Homer", "Simpson")).thenReturn(personList.get(0));
+
     //When
-    classUnderTest.removeAllPersons();
+    boolean actual = classUnderTest.removePerson("Homer", "Simpson");
+
     //Then
-    List<Person> actual = classUnderTest.getAllPersons();
-    assertTrue(actual.isEmpty());
-  }*/
+    assertTrue(actual);
+  }
+
+  @Test
+  void whenDeleteNotExistingPersonReturnTrue() {
+    //Given
+    when(repository.findById("John", "Doe")).thenReturn(null);
+
+    //When
+    boolean actual = classUnderTest.removePerson("John", "Doe");
+
+    //Then
+    assertFalse(actual);
+  }
 }

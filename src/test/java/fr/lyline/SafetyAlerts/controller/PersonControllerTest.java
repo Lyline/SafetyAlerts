@@ -1,190 +1,249 @@
 package fr.lyline.SafetyAlerts.controller;
 
 import fr.lyline.SafetyAlerts.model.Person;
-import fr.lyline.SafetyAlerts.repository.PersonRepoImpl;
 import fr.lyline.SafetyAlerts.service.PersonServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(SpringExtension.class)
-@WebMvcTest(controllers = PersonController.class)
-@AutoConfigureMockMvc
+@WebMvcTest(PersonController.class)
 public class PersonControllerTest {
 
-  @Autowired
-  private MockMvc mockMvc;
+  List<Person> personList = new ArrayList<>();
 
   @MockBean
   private PersonServiceImpl service;
+  Person person1 = new Person("Homer", "Simpson", "742 Evergreen Terrace",
+      "Springfield", 80085, "123-456", "homer@test.com");
+  Person person2 = new Person("Marge", "Simpson", "742 Evergreen Terrace",
+      "Springfield", 80085, "123-456", "homer@test.com");
+  Person person3 = new Person("Bart", "Simpson", "742 Evergreen Terrace",
+      "Springfield", 80085, "123-456", "homer@test.com");
+  @Autowired
+  private MockMvc mvc;
 
-  @MockBean
-  private PersonRepoImpl repository;
-
-
-  /*@BeforeEach
+  @BeforeEach
   void setUp() {
-    service = new PersonServiceImpl(repository);
-  }*/
+    personList.add(person1);
+    personList.add(person2);
+    personList.add(person3);
+  }
 
   @Test
-  void getPersonsReturnStatus200() throws Exception {
+  void whenGetAllPersonsReturnStatus200() throws Exception {
     //Given
     List<Person> personList = new ArrayList<>();
-
-    Person newPerson1 = new Person("John", "Doe", "address",
-        "City", 2, "123456", "j@aol.com");
-
-    personList.add(newPerson1);
-    when(service.getAllPersons()).thenReturn(personList);
+    personList.add(person1);
+    given(service.getAllPersons()).willReturn(personList);
 
     //When
-    this.mockMvc.perform(get("/persons"))
-        .andExpect(status().is2xxSuccessful());
+    MvcResult result = mvc.perform(get("/persons")
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andReturn();
+
     //Then
+    assertEquals("[{\"firstName\":\"Homer\"," +
+        "\"lastName\":\"Simpson\"," +
+        "\"address\":\"742 Evergreen Terrace\"," +
+        "\"city\":\"Springfield\"," +
+        "\"zip\":80085," +
+        "\"phone\":\"123-456\"," +
+        "\"email\":\"homer@test.com\"}]", result.getResponse().getContentAsString());
   }
 
   @Test
-  void getPersonReturnStatus200() throws Exception {
+  void whenGetAllPersonsEmptyListReturnStatut404() throws Exception {
     //Given
-    List<Person> personList = new ArrayList<>();
-
-    Person newPerson1 = new Person("Roger", "Boyd", "address",
-        "City", 2, "123456", "j@aol.com");
-
-    personList.add(newPerson1);
-    when(service.getPerson("Roger_Boyd")).thenReturn(newPerson1);
+    given(service.getAllPersons()).willReturn(List.of());
 
     //When
-    mockMvc.perform(get("/persons/Roger_Boyd"))
-        .andExpect(status().isOk());
+    MvcResult result = mvc.perform(get("/persons")
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound())
+        .andReturn();
+
     //Then
+    assertEquals("", result.getResponse().getContentAsString());
   }
 
   @Test
-  void getPersonReturnStatus400() throws Exception {
+  void whenGetExistingPersonReturnStatus200() throws Exception {
     //Given
-    //When
-    mockMvc.perform(get("/person/John_Doe"))
-        .andExpect(status().isNotFound());
-    //Then
-  }
-
-  @Test
-  void addPersonReturnStatus200() throws Exception {
-    //Given
-    Person personMock = new Person();
-    personMock.setFirstName("Johnny");
-    personMock.setLastName("Doe1");
-    personMock.setAddress("New Address");
-    personMock.setCity("New City");
-    personMock.setZip(1234);
-    personMock.setPhone("123-345");
-    personMock.setEmail("john@aol.com");
-
-    when(service.addPerson(personMock)).thenReturn(personMock);
+    given(service.getPerson("Homer", "Simpson")).willReturn(person1);
 
     //When
-   /* mockMvc.perform(post("/person")
+    MvcResult result = mvc.perform(get("/persons/Homer_Simpson")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(json)
-        .andExpect(status().isCreated()));*/
-
+            .param("firstName", "Homer")
+            .param("lastName", "Simpson"))
+        .andExpect(status().isOk())
+        .andReturn();
 
     //Then
+    assertEquals("{\"firstName\":\"Homer\"," +
+        "\"lastName\":\"Simpson\"," +
+        "\"address\":\"742 Evergreen Terrace\"," +
+        "\"city\":\"Springfield\"," +
+        "\"zip\":80085," +
+        "\"phone\":\"123-456\"," +
+        "\"email\":\"homer@test.com\"}", result.getResponse().getContentAsString());
   }
 
   @Test
-  void upDatePersonReturnStatus200() throws Exception {
+  void whenGetNotExistingPersonReturnStatus404() throws Exception {
     //Given
+    given(service.getPerson("Homer", "Simpson")).willReturn(null);
+
     //When
-    mockMvc.perform(put("/person/John_Boyd"))
-        .andExpect(status().isOk());
-    //Then
-  }
-
-  @Test
-  void removePersonReturnStatus200() throws Exception {
-    //Given
-    //When
-    mockMvc.perform(delete("/person/John_Boyd"))
-        .andExpect(status().isOk());
-    //Then
-  }
-
-  @Test
-  void addPersonReturnStatus201() throws Exception {
-    //Given
-    Person personTest = new Person();
-    personTest.setFirstName("A");
-    personTest.setLastName("X");
-    personTest.setAddress("address");
-    personTest.setCity("t");
-    personTest.setZip(123);
-    personTest.setPhone("123456");
-    personTest.setEmail("klm");
-
-    Person personTest1 = new Person();
-    personTest1.setFirstName("Arthur");
-    personTest1.setLastName("X");
-    personTest1.setAddress("address");
-    personTest1.setCity("t");
-    personTest1.setZip(123);
-    personTest1.setPhone("123456");
-    personTest1.setEmail("klm");
-
-
-    String json = "{ \"firstName\":\"Arthur\", " +
-        "\"lastName\":\"X\", " +
-        "\"address\":\"address\", " +
-        "\"city\":\"t\", " +
-        "\"zip\":\"123\", " +
-        "\"phone\":\"123456\", " +
-        "\"email\":\"klm\" }\n";
-
-    when(service.addPerson(personTest1)).thenReturn(personTest1);
-
-    mockMvc.perform(post("/persons")
+    MvcResult result = mvc.perform(get("/persons/Homer_Simpson")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(json)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().is2xxSuccessful());
+            .param("firstName", "Homer")
+            .param("lastName", "Simpson"))
+        .andExpect(status().isNotFound())
+        .andReturn();
 
-
-    //When
-    //Then
+    assertEquals("", result.getResponse().getContentAsString());
   }
 
   @Test
-  void addPersonNullObjectReturnStatut400() throws Exception {
+  void whenAddPersonReturnStatus404() throws Exception {
     //Given
-    Person personTest = new Person();
-    personTest.setFirstName("A");
-    personTest.setLastName("X");
-    personTest.setAddress("adress");
-    personTest.setCity("t");
-    personTest.setZip(123);
-    personTest.setPhone("123456");
-    personTest.setEmail("klm");
+    Person person = new Person("Jo", "Simpson", "NoWhere", "Springfield", 80085,
+        "123-456", "jo@test.com");
 
-    when(service.addPerson(personTest)).thenReturn(null);
+    given(service.getPerson("Jo", "Simpson")).willReturn(null);
+    given(service.addPerson(person)).willReturn(false);
 
-    mockMvc.perform(post("/persons"))
-        .andExpect(status().is4xxClientError());
+    //When
+    MvcResult result = mvc.perform(post("/persons")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"firstName\":\"Jo\"," +
+                "\"lastName\":\"Simpson\"," +
+                "\"address\":\"NoWhere\"," +
+                "\"city\":\"Springfield\"," +
+                "\"zip\": 80085," +
+                "\"phone\":\"123-456\"," +
+                "\"email\":\"jo@test.com\"}"))
+        .andExpect(status().isNotFound())
+        .andReturn();
+    //Then
+    assertEquals("", result.getResponse().getContentAsString());
+  }
+
+  @Test
+  void whenAddExistingPersonReturnStatus409() throws Exception {
+    //Given
+    given(service.getPerson("Homer", "Simpson")).willReturn(person1);
+
+    //When
+    MvcResult result = mvc.perform(post("/persons")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"firstName\":\"Homer\"," +
+                "\"lastName\":\"Simpson\"," +
+                "\"address\":\"742 Evergreen Terrace\"," +
+                "\"city\":\"Springfield\"," +
+                "\"zip\": 80085," +
+                "\"phone\":\"123-456\"," +
+                "\"email\":\"homer@test.com\"}"))
 
 
+        .andExpect(status().isConflict())
+        .andReturn();
+    //Then
+    assertEquals("", result.getResponse().getContentAsString());
+  }
+
+  @Test
+  void whenUpdateExistingPersonReturnStatus200() throws Exception {
+    //Given
+    given(service.getPerson("Homer", "Simpson")).willReturn(person1);
+//When
+    MvcResult result = mvc.perform(patch("/persons/Homer_Simpson")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content("{\"firstName\":\"Homer\"," +
+                "\"lastName\":\"Simpson\"," +
+                "\"address\":\"NoWhere\"," +
+                "\"city\":\"Sin City\"," +
+                "\"zip\": 80085," +
+                "\"phone\":\"123-456\"," +
+                "\"email\":\"homer@test.com\"}")
+        )
+        .andExpect(status().isOk())
+        .andReturn();
+    //Then
+    assertEquals("", result.getResponse().getContentAsString());
+  }
+
+  @Test
+  void whenUpdateExistingPersonReturnStatus404() throws Exception {
+    //Given
+    given(service.getPerson("Homer", "Simpson")).willReturn(null);
+    //When
+    MvcResult result = mvc.perform(patch("/persons/Homer_Simpson")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content("{\"firstName\":\"Homer\"," +
+                "\"lastName\":\"Simpson\"," +
+                "\"address\":\"NoWhere\"," +
+                "\"city\":\"Sin City\"," +
+                "\"zip\": 80085," +
+                "\"phone\":\"123-456\"," +
+                "\"email\":\"homer@test.com\"}"))
+        .andExpect(status().isNotFound())
+        .andReturn();
+    //Then
+    assertEquals("", result.getResponse().getContentAsString());
+  }
+
+  @Test
+  void whenRemoveExistingPersonReturnStatus200() throws Exception {
+    //Given
+    when(service.getPerson("Homer", "Simpson")).thenReturn(person1);
+    when(service.removePerson("Homer", "Simpson")).thenReturn(true);
+
+    //When
+    MvcResult result = mvc.perform(delete("/persons/Homer_Simpson")
+            .contentType(MediaType.APPLICATION_JSON)
+            .param("firstName", "Homer")
+            .param("lastName", "Simpson"))
+        .andExpect(status().isOk())
+        .andReturn();
+
+    //Then
+    assertEquals("", result.getResponse().getContentAsString());
+  }
+
+  @Test
+  void whenRemoveExistingPersonReturnStatus404() throws Exception {
+    //Given
+    when(service.getPerson("Homer", "Simpson")).thenReturn(null);
+    when(service.removePerson("Homer", "Simpson")).thenReturn(false);
+    //When
+    MvcResult result = mvc.perform(delete("/persons/Homer_Simpson")
+            .contentType(MediaType.APPLICATION_JSON)
+            .param("firstName", "Homer")
+            .param("lastName", "Simpson"))
+        .andExpect(status().isNotFound())
+        .andReturn();
+    //Then
+    assertEquals("", result.getResponse().getContentAsString());
   }
 }
