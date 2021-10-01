@@ -65,8 +65,8 @@ public class MainFunctionsAPIService {
   public PersonInfo getPersonInfo(String firstName, String lastName) {
     PersonInfo personInfo;
 
-    Person personData = personRepo.findById(firstName + lastName);
-    MedicalRecord medicalRecordData = medicalRecordRepo.findById(firstName + lastName);
+    Person personData = personRepo.findById(firstName, lastName);
+    MedicalRecord medicalRecordData = medicalRecordRepo.findByFirstNameAndLastName(firstName, lastName);
 
     if (personData.getFirstName() != null && medicalRecordData.getFirstName() != null) {
       int age = Years.yearsBetween(medicalRecordData.getBirthdate(), DateTime.now()).getYears();
@@ -91,7 +91,7 @@ public class MainFunctionsAPIService {
         .collect(Collectors.toList());
 
     for (Person resident : residents) {
-      MedicalRecord person = medicalRecordRepo.findById(resident.getFirstName() + resident.getLastName());
+      MedicalRecord person = medicalRecordRepo.findByFirstNameAndLastName(resident.getFirstName(), resident.getLastName());
       int age = Years.yearsBetween(person.getBirthdate(), DateTime.now()).getYears();
 
       if (age <= 18) {
@@ -133,7 +133,7 @@ public class MainFunctionsAPIService {
         for (Person person : persons) {
 
           if (person.getAddress().equals(address)) {
-            MedicalRecord medic = medicalRecordRepo.findById(person.getFirstName() + person.getLastName());
+            MedicalRecord medic = medicalRecordRepo.findByFirstNameAndLastName(person.getFirstName(), person.getLastName());
             PersonInfo personInfo = new PersonInfo().add(person, medic);
             residents.add(personInfo);
           }
@@ -179,7 +179,8 @@ public class MainFunctionsAPIService {
 
           personList.add(personInfoMap);
 
-          MedicalRecord medicalPersonInfo = medicalRecordRepo.findById(person.getFirstName() + person.getLastName());
+          MedicalRecord medicalPersonInfo =
+              medicalRecordRepo.findByFirstNameAndLastName(person.getFirstName(), person.getLastName());
           int agePerson = Years.yearsBetween(medicalPersonInfo.getBirthdate(), DateTime.now()).getYears();
 
           if (agePerson <= 18) {
@@ -220,7 +221,7 @@ public class MainFunctionsAPIService {
       Map<String, String> personInfo = new HashMap<>();
       Map<String, Object> resident = new HashMap<>();
 
-      MedicalRecord medicInfo = medicalRecordRepo.findById(person.getFirstName() + person.getLastName());
+      MedicalRecord medicInfo = medicalRecordRepo.findByFirstNameAndLastName(person.getFirstName(), person.getLastName());
       String age = String.valueOf(Years.yearsBetween(medicInfo.getBirthdate(), DateTime.now()).getYears());
 
       personInfo.put("phone", person.getPhone());

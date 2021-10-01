@@ -100,8 +100,8 @@ class MainFunctionsAPIServiceTest {
   @Test
   void shouldGetPersonInfo() {
     //Given
-    when(personRepo.findById("BartSimpson")).thenReturn(simpsonFamily.get(2));
-    when(medicalRecordRepo.findById("BartSimpson")).thenReturn(medicalRecords.get(2));
+    when(personRepo.findById("Bart", "Simpson")).thenReturn(simpsonFamily.get(2));
+    when(medicalRecordRepo.findByFirstNameAndLastName("Bart", "Simpson")).thenReturn(medicalRecords.get(2));
 
     //When
     PersonInfo result = classUnderTest.getPersonInfo("Bart", "Simpson");
@@ -119,8 +119,8 @@ class MainFunctionsAPIServiceTest {
   void shouldGetPersonInfoReturnNull() {
     //Given
     //When
-    when(personRepo.findById("JohnDoe")).thenReturn(new Person());
-    when(medicalRecordRepo.findById("JohnDoe")).thenReturn(new MedicalRecord());
+    when(personRepo.findById("John", "Doe")).thenReturn(new Person());
+    when(medicalRecordRepo.findByFirstNameAndLastName("John", "Doe")).thenReturn(new MedicalRecord());
     //Then
     PersonInfo result = classUnderTest.getPersonInfo("John", "Doe");
     assertNull(result);
@@ -130,9 +130,9 @@ class MainFunctionsAPIServiceTest {
   void shouldGetChildAlertReturnOneChildWithTwoParents() {
     //Given
     when(personRepo.findAll()).thenReturn(simpsonFamily);
-    when(medicalRecordRepo.findById("HomerSimpson")).thenReturn(medicalRecords.get(0));
-    when(medicalRecordRepo.findById("MargeSimpson")).thenReturn(medicalRecords.get(1));
-    when(medicalRecordRepo.findById("BartSimpson")).thenReturn(medicalRecords.get(2));
+    when(medicalRecordRepo.findByFirstNameAndLastName("Homer", "Simpson")).thenReturn(medicalRecords.get(0));
+    when(medicalRecordRepo.findByFirstNameAndLastName("Marge", "Simpson")).thenReturn(medicalRecords.get(1));
+    when(medicalRecordRepo.findByFirstNameAndLastName("Bart", "Simpson")).thenReturn(medicalRecords.get(2));
 
     //When
     List<ChildAlert> actual = classUnderTest.getChildAlert("742 Evergreen Terrace");
@@ -168,7 +168,7 @@ class MainFunctionsAPIServiceTest {
 
     when(personRepo.findAll()).thenReturn(List.of(person));
     when(fireStationRepo.findAll()).thenReturn(fireStations);
-    when(medicalRecordRepo.findById("HomerSimpson")).thenReturn(medic);
+    when(medicalRecordRepo.findByFirstNameAndLastName("Homer", "Simpson")).thenReturn(medic);
 
     when(personInfo.add(person, medic)).thenReturn(personInfoMock);
 
@@ -191,12 +191,9 @@ class MainFunctionsAPIServiceTest {
   @Test
   void getResidentsByStationListWithoutPerson() {
     //Given
-
     when(personRepo.findAll()).thenReturn(List.of());
     when(fireStationRepo.findAll()).thenReturn(fireStations);
-    when(medicalRecordRepo.findById("HomerSimpson")).thenReturn(null);
-
-    // when(personInfo.add(person,medic)).thenReturn(personInfoMock);
+    when(medicalRecordRepo.findByFirstNameAndLastName("Homer", "Simpson")).thenReturn(null);
 
     //When
     Map<Integer, List<Map<String, List<PersonInfo>>>> actual = classUnderTest.getResidentsContactFromToFireStation(new int[]{1});
@@ -210,9 +207,9 @@ class MainFunctionsAPIServiceTest {
     //Given
     when(personRepo.findAll()).thenReturn(simpsonFamily);
     when(fireStationRepo.findAll()).thenReturn(fireStations);
-    when(medicalRecordRepo.findById("HomerSimpson")).thenReturn(medicalRecords.get(0));
-    when(medicalRecordRepo.findById("MargeSimpson")).thenReturn(medicalRecords.get(1));
-    when(medicalRecordRepo.findById("BartSimpson")).thenReturn(medicalRecords.get(2));
+    when(medicalRecordRepo.findByFirstNameAndLastName("Homer", "Simpson")).thenReturn(medicalRecords.get(0));
+    when(medicalRecordRepo.findByFirstNameAndLastName("Marge", "Simpson")).thenReturn(medicalRecords.get(1));
+    when(medicalRecordRepo.findByFirstNameAndLastName("Bart", "Simpson")).thenReturn(medicalRecords.get(2));
 
     //When
     Map<String, List<Map<String, String>>> actual = classUnderTest.getPersonsInfoByStation(1);
@@ -231,9 +228,9 @@ class MainFunctionsAPIServiceTest {
     //Given
     when(personRepo.findAll()).thenReturn(List.of());
     when(fireStationRepo.findAll()).thenReturn(fireStations);
-    when(medicalRecordRepo.findById("HomerSimpson")).thenReturn(null);
-    when(medicalRecordRepo.findById("MargeSimpson")).thenReturn(null);
-    when(medicalRecordRepo.findById("BartSimpson")).thenReturn(null);
+    when(medicalRecordRepo.findByFirstNameAndLastName("Homer", "Simpson")).thenReturn(null);
+    when(medicalRecordRepo.findByFirstNameAndLastName("Marge", "Simpson")).thenReturn(null);
+    when(medicalRecordRepo.findByFirstNameAndLastName("Bart", "Simpson")).thenReturn(null);
 
     //When
     Map<String, List<Map<String, String>>> actual = classUnderTest.getPersonsInfoByStation(1);
@@ -247,9 +244,9 @@ class MainFunctionsAPIServiceTest {
     //Given
     when(personRepo.findAll()).thenReturn(simpsonFamily);
     when(fireStationRepo.findAll()).thenReturn(fireStations);
-    when(medicalRecordRepo.findById("HomerSimpson")).thenReturn(medicalRecords.get(0));
-    when(medicalRecordRepo.findById("MargeSimpson")).thenReturn(medicalRecords.get(1));
-    when(medicalRecordRepo.findById("BartSimpson")).thenReturn(medicalRecords.get(2));
+    when(medicalRecordRepo.findByFirstNameAndLastName("Homer", "Simpson")).thenReturn(medicalRecords.get(0));
+    when(medicalRecordRepo.findByFirstNameAndLastName("Marge", "Simpson")).thenReturn(medicalRecords.get(1));
+    when(medicalRecordRepo.findByFirstNameAndLastName("Bart", "Simpson")).thenReturn(medicalRecords.get(2));
 
     //When
     Map<String, List<Object>> actual = classUnderTest.getPersonsInfoByAddress("742 Evergreen Terrace");
@@ -284,9 +281,9 @@ class MainFunctionsAPIServiceTest {
     //Given
     when(personRepo.findAll()).thenReturn(List.of());
     when(fireStationRepo.findAll()).thenReturn(List.of());
-    when(medicalRecordRepo.findById("HomerSimpson")).thenReturn(null);
-    when(medicalRecordRepo.findById("MargeSimpson")).thenReturn(null);
-    when(medicalRecordRepo.findById("BartSimpson")).thenReturn(null);
+    when(medicalRecordRepo.findByFirstNameAndLastName("Homer", "Simpson")).thenReturn(null);
+    when(medicalRecordRepo.findByFirstNameAndLastName("Marge", "Simpson")).thenReturn(null);
+    when(medicalRecordRepo.findByFirstNameAndLastName("Bart", "Simpson")).thenReturn(null);
 
     //When
     Map<String, List<Object>> actual = classUnderTest.getPersonsInfoByAddress("742 Evergreen Terrace");
