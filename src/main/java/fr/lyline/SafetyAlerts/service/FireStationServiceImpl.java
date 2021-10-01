@@ -1,6 +1,7 @@
 package fr.lyline.SafetyAlerts.service;
 
 import fr.lyline.SafetyAlerts.model.FireStation;
+import fr.lyline.SafetyAlerts.repository.FireStationRepo;
 import fr.lyline.SafetyAlerts.repository.FireStationRepoImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,9 +12,8 @@ import java.util.List;
 
 @Service
 public class FireStationServiceImpl implements FireStationService {
-
   @Autowired
-  FireStationRepoImpl repository;
+  FireStationRepo repository;
 
   public FireStationServiceImpl(FireStationRepoImpl repository) {
     this.repository = repository;
@@ -31,6 +31,7 @@ public class FireStationServiceImpl implements FireStationService {
     return list;
   }
 
+
   @Override
   public List<Integer> getAllFireStations() {
     List<Integer> list = new ArrayList<>();
@@ -43,42 +44,25 @@ public class FireStationServiceImpl implements FireStationService {
   }
 
   @Override
-  public void addFireStation(FireStation fireStation) {
+  public boolean addFireStation(FireStation fireStation) {
     if (fireStation.getStation() != 0 && fireStation.getAddress() != null) {
-      repository.add(fireStation);
-    }
+      boolean result = repository.add(fireStation);
+      return result;
+    } else return false;
   }
 
   @Override
-  public void addAllFireStations(List<FireStation> list) {
-    for (FireStation fs : list) {
-      if (fs.getStation() != 0 && fs.getAddress() != null) {
-        repository.add(fs);
-      }
-    }
+  public boolean updateFireStation(Integer oldStationNumber, String address, FireStation fireStationToUpDate) {
+    return repository.update(oldStationNumber, address, fireStationToUpDate);
   }
 
   @Override
-  public void upDateFireStation(String address, String fireStationId, FireStation fireStationToUpDate) {
-    String id = fireStationId + "-" + address;
-    FireStation fireStation = repository.findById(id);
-
-    if (fireStation != null) {
-      if (fireStationToUpDate.getStation() != 0
-          && fireStationToUpDate.getAddress().equals(fireStation.getAddress())) {
-        fireStation.setStation(fireStationToUpDate.getStation());
-      }
-    }
-    repository.update(id, fireStation);
+  public boolean removeFireStation(String stationNumber, String address) {
+    return repository.deleteByStationAndAddress(Integer.valueOf(stationNumber), address);
   }
 
-  @Override
-  public void removeFireStation(String fireStation, String address) {
-    repository.deleteById(fireStation + "-" + address);
-  }
-
-  @Override
-  public void removeAllFireStations() {
-    repository.deleteAll();
+  public List<FireStation> getAllFireStationsObject() {
+    List<FireStation> data = repository.findAll();
+    return data;
   }
 }

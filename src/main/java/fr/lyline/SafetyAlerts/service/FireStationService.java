@@ -9,13 +9,11 @@ public interface FireStationService {
 
   List<Integer> getAllFireStations();
 
-  void addFireStation(FireStation fs);
+  boolean addFireStation(FireStation fs);
 
-  void addAllFireStations(List<FireStation> list);
+  boolean updateFireStation(Integer oldStationNumber, String address, FireStation fireStationToUpDate);
 
-  void upDateFireStation(String oldAddress, String oldFireStationId, FireStation fireStationToUpDate);
+  boolean removeFireStation(String fireStation, String address);
 
-  void removeFireStation(String fireStation, String address);
-
-  void removeAllFireStations();
+  List<FireStation> getAllFireStationsObject();
 }

@@ -7,15 +7,11 @@ import java.util.List;
 public interface FireStationRepo {
   List<FireStation> findAll();
 
-  FireStation findById(String address);
+  FireStation findByStationNumberAndAddress(Integer stationNumber, String address);
 
-  void add(FireStation fireStation);
+  boolean add(FireStation fireStation);
 
-  void addAll(List<FireStation> list);
+  boolean update(Integer oldStationNumber, String address, FireStation fireStationToUpdate);
 
-  void update(String address, FireStation fireStationToUpDate);
-
-  void deleteById(String id);
-
-  void deleteAll();
+  boolean deleteByStationAndAddress(Integer stationNumber, String address);
 }

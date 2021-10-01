@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class FireStation {
-  private int station;
+  private Integer station;
   private String address;
 
   public FireStation() {

@@ -11,6 +11,7 @@ import java.util.List;
 
 @RestController
 public class FireStationController {
+
   @Autowired
   FireStationService service;
 
@@ -33,41 +34,33 @@ public class FireStationController {
   }
 
   @PostMapping("/firestations")
-  public ResponseEntity<FireStation> addFireStation(@RequestBody FireStation fireStation) {
+  public ResponseEntity addFireStation(@RequestBody FireStation fireStation) {
     List<Integer> response = service.getFireStation(fireStation.getAddress());
 
     if (!response.contains(fireStation.getStation())) {
       service.addFireStation(fireStation);
-      return new ResponseEntity<>(fireStation, HttpStatus.OK);
-    } else return new ResponseEntity<>(fireStation, HttpStatus.CONFLICT);
+      return new ResponseEntity<>(HttpStatus.CREATED);
+    } else return new ResponseEntity<>(HttpStatus.CONFLICT);
   }
 
   @PatchMapping("/firestations/{oldFS}-{address}")
   public ResponseEntity<FireStation> upDateFireStation(@RequestBody FireStation fireStation,
                                                        @PathVariable(value = "oldFS") Integer oldFS,
                                                        @PathVariable(value = "address") String address) {
+    boolean result = service.updateFireStation(oldFS, address, fireStation);
 
-    List<Integer> response = service.getFireStation(address);
-
-    if (response.contains(oldFS)) {
-      if (!response.contains(fireStation.getStation())) {
-        service.upDateFireStation(address, oldFS.toString(), fireStation);
-        return new ResponseEntity<>(fireStation, HttpStatus.OK);
-      } else if (response.contains(fireStation.getStation())) {
-        service.removeFireStation(oldFS.toString(), address);
-        return new ResponseEntity<>(fireStation, HttpStatus.OK);
-      }
-    }
-    return new ResponseEntity<>(fireStation, HttpStatus.NOT_FOUND);
+    if (result) {
+      return new ResponseEntity<>(fireStation, HttpStatus.OK);
+    } else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
 
-  @DeleteMapping("/firestations/{idStation}-{address}")
-  public ResponseEntity deleteFireStation(@PathVariable(value = "idStation") Integer idStation,
-                                          @PathVariable(value = "address") String address) {
+  @DeleteMapping("/firestations/{stationNumber}-{address}")
+  public ResponseEntity<List<Integer>> deleteFireStation(@PathVariable() String stationNumber,
+                                                         @PathVariable() String address) {
     List<Integer> response = service.getFireStation(address);
 
-    if (response.contains(idStation)) {
-      service.removeFireStation(idStation.toString(), address);
+    if (response.contains(Integer.valueOf(stationNumber))) {
+      service.removeFireStation(stationNumber, address);
       return new ResponseEntity(HttpStatus.OK);
     } else return new ResponseEntity(HttpStatus.NOT_FOUND);
   }

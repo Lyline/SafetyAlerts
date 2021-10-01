@@ -4,60 +4,108 @@ import fr.lyline.SafetyAlerts.model.FireStation;
 import fr.lyline.SafetyAlerts.utils.JsonConverter;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Repository
 public class FireStationRepoImpl implements FireStationRepo {
 
-  JsonConverter data = new JsonConverter();
-  private Map<String, FireStation> fireStationMap =
-      (Map<String, FireStation>) data.convertJsonToObject("src/main/resources/fireStation.json");
+  JsonConverter data;
+  String fileJsonPath = "src/main/resources/fireStation.json";
 
-  public FireStationRepoImpl() {
+  public FireStationRepoImpl(JsonConverter data) {
+    this.data = data;
   }
 
   @Override
   public List<FireStation> findAll() {
-    return fireStationMap.values().stream().collect(Collectors.toList());
+    List<FireStation> stationDataList = (List<FireStation>) data.convertJsonToObject(fileJsonPath);
+    return new ArrayList<>(stationDataList);
   }
 
   @Override
-  public FireStation findById(String address) {
-    return fireStationMap.get(address);
+  public FireStation findByStationNumberAndAddress(Integer stationNumber, String address) {
+    List<FireStation> stationDataList = (List<FireStation>) data.convertJsonToObject(fileJsonPath);
+    for (FireStation station : stationDataList) {
+      if (station.getStation() == stationNumber && station.getAddress().equals(address)) {
+        return station;
+      }
+    }
+    return null;
   }
 
   @Override
-  public void add(FireStation fireStation) {
-    fireStationMap.put(fireStation.getStation() + "-" + fireStation.getAddress(), fireStation);
+  public boolean add(FireStation fireStation) {
+    List<FireStation> stationDataList = (List<FireStation>) data.convertJsonToObject(fileJsonPath);
+
+    if (!stationDataList.contains(fireStation)) {
+      if ((fireStation.getStation() != null) &&
+          fireStation.getAddress() != null) {
+        stationDataList.add(fireStation);
+        data.convertObjectToJson(fileJsonPath, stationDataList);
+        return true;
+      } else return false;
+    } else return false;
   }
 
   @Override
-  public void addAll(List<FireStation> list) {
-    HashMap<String, FireStation> subList = new HashMap<>();
+  public boolean update(Integer oldStationNumber, String address, FireStation fireStationToUpDate) {
+    List<FireStation> stationDataList = (List<FireStation>) data.convertJsonToObject(fileJsonPath);
+    FireStation oldStation = null;
 
-    for (FireStation f : list) {
-      subList.put(f.getStation() + "-" + f.getAddress(), f);
+    for (FireStation stationSearch : stationDataList) {
+      if (stationSearch.getStation() == oldStationNumber && stationSearch.getAddress().equals(address)) {
+        oldStation = stationSearch;
+      }
+    }
+    //if old station exists then update to fireStationToUpdate
+    if (oldStation != null) {
+
+      //if the update station already exist then fireStationToUpdate not use and the old station delete
+      //for not create a same entity
+      FireStation stationTest = findStation(fireStationToUpDate);
+      if (stationTest != null) {
+        stationDataList.remove(oldStation);
+        data.convertObjectToJson(fileJsonPath, stationDataList);
+        return true;
+      } else {
+        //if fireStationToUpdate not already exist then replace it
+        stationDataList.remove(oldStation);
+        stationDataList.add(fireStationToUpDate);
+        data.convertObjectToJson(fileJsonPath, stationDataList);
+        return true;
+      }
+    } else return false;
+  }
+
+  @Override
+  public boolean deleteByStationAndAddress(Integer stationNumber, String address) {
+    List<FireStation> stationDataList = (List<FireStation>) data.convertJsonToObject(fileJsonPath);
+    FireStation stationToDelete = null;
+
+    for (FireStation fs : stationDataList) {
+      if (fs.getStation() == stationNumber && fs.getAddress().equals(address)) {
+        stationToDelete = fs;
+      }
     }
 
-    fireStationMap.putAll(subList);
+    if (stationToDelete != null) {
+      stationDataList.remove(stationToDelete);
+      data.convertObjectToJson(fileJsonPath, stationDataList);
+      return true;
+    } else return false;
   }
 
-  @Override
-  public void update(String id, FireStation fireStationToUpDate) {
-    fireStationMap.remove(id);
-    fireStationMap.put(fireStationToUpDate.getStation() + "-" + fireStationToUpDate.getAddress(), fireStationToUpDate);
-  }
+  private FireStation findStation(FireStation fireStation) {
+    List<FireStation> stationDataList = (List<FireStation>) data.convertJsonToObject(fileJsonPath);
+    FireStation stationSearch = null;
 
-  @Override
-  public void deleteById(String id) {
-    fireStationMap.remove(id);
-  }
-
-  @Override
-  public void deleteAll() {
-    fireStationMap.clear();
+    for (FireStation fs : stationDataList) {
+      if (fs.getStation() == fireStation.getStation() &&
+          fs.getAddress().equals(fireStation.getAddress())) {
+        stationSearch = fireStation;
+      }
+    }
+    return stationSearch;
   }
 }
