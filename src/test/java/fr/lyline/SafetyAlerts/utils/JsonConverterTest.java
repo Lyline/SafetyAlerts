@@ -6,7 +6,6 @@ import fr.lyline.SafetyAlerts.model.FireStation;
 import fr.lyline.SafetyAlerts.model.MedicalRecord;
 import fr.lyline.SafetyAlerts.model.Person;
 import org.joda.time.DateTime;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
@@ -16,7 +15,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,18 +34,15 @@ public class JsonConverterTest {
   FireStation fireStation = new FireStation();
   MedicalRecord medicalRecord = new MedicalRecord();
 
+
   @Test
-  void shouldConvertJsonEntryToPersonObject() {
+  void shouldConvertJsonEntryToPersonObject() throws JsonProcessingException {
     //Given
     String dataTest = "{ \"firstName\":\"John\", \"lastName\":\"Boyd\", \"address\":\"1509 Culver St\", \"city\":\"Culver\"," +
         "\"zip\":\"97451\", \"phone\":\"841-874-6512\", \"email\":\"jaboyd@email.com\" }";
 
     //When
-    try {
-      person = mapper.readValue(dataTest, Person.class);
-    } catch (JsonProcessingException e) {
-      e.printStackTrace();
-    }
+    person = mapper.readValue(dataTest, Person.class);
 
     //Then
     assertEquals("John", person.getFirstName());
@@ -60,16 +55,12 @@ public class JsonConverterTest {
   }
 
   @Test
-  void shouldConvertJsonEntryToFireStationObject() {
+  void shouldConvertJsonEntryToFireStationObject() throws JsonProcessingException {
     //Given
     String dataTest = "{ \"address\":\"1509 Culver St\", \"station\":\"3\" }";
 
     //When
-    try {
-      fireStation = mapper.readValue(dataTest, FireStation.class);
-    } catch (JsonProcessingException e) {
-      e.printStackTrace();
-    }
+    fireStation = mapper.readValue(dataTest, FireStation.class);
 
     //Then
     assertEquals("1509 Culver St", fireStation.getAddress());
@@ -77,17 +68,13 @@ public class JsonConverterTest {
   }
 
   @Test
-  void shouldConvertJsonEntryToMedicalRecordObject() {
+  void shouldConvertJsonEntryToMedicalRecordObject() throws JsonProcessingException {
     //Given
     String dataTest = "{ \"firstName\":\"John\", \"lastName\":\"Boyd\", \"birthdate\":\"03/06/1984\", " +
         "\"medications\":[\"aznol:350mg\", \"hydrapermazol:100mg\"], \"allergies\":[\"nillacilan\"] }";
 
     //When
-    try {
-      medicalRecord = mapper.readValue(dataTest, MedicalRecord.class);
-    } catch (JsonProcessingException e) {
-      e.printStackTrace();
-    }
+    medicalRecord = mapper.readValue(dataTest, MedicalRecord.class);
 
     //Then
     assertEquals("John", medicalRecord.getFirstName());
@@ -106,7 +93,7 @@ public class JsonConverterTest {
     try {
       person = mapper.readValue(dataTest, Person.class);
     } catch (JsonProcessingException e) {
-      System.out.println("Unrecognized Json or Java field ");
+      e.printStackTrace();
     }
 
     //Then
@@ -118,37 +105,37 @@ public class JsonConverterTest {
   @Test
   void shouldCreateTwoPersonObjectsFromJsonFile() {
     //Given
-    Map<String, Person> list;
+    List<Person> personList;
 
     //When
-    list = (Map<String, Person>) classUnderTest.convertJsonToObject("src/test/resources/personsTest.json");
+    personList = (List<Person>) classUnderTest.convertJsonToObject("src/test/resources/personsTest.json");
 
     //Then
-    assertEquals(2, list.size());
+    assertEquals(2, personList.size());
   }
 
   @Test
   void shouldCreateFourFireStationObjectsFromJsonFile() {
     //Given
-    Map<String, FireStation> list;
+    List<FireStation> fireStationList;
 
     //When
-    list = (Map<String, FireStation>) classUnderTest.convertJsonToObject("src/test/resources/fireStationTest.json");
+    fireStationList = (List<FireStation>) classUnderTest.convertJsonToObject("src/test/resources/fireStationTest.json");
 
     //Then
-    assertEquals(4, list.size());
+    assertEquals(4, fireStationList.size());
   }
 
   @Test
   void shouldCreateTwoMedicalRecordObjectsFromJsonFile() {
     //Given
-    Map<String, MedicalRecord> list;
+    List<MedicalRecord> medicalRecordList;
 
     //When
-    list = (Map<String, MedicalRecord>) classUnderTest.convertJsonToObject("src/test/resources/medicalRecordTest.json");
+    medicalRecordList = (List<MedicalRecord>) classUnderTest.convertJsonToObject("src/test/resources/medicalRecordTest.json");
 
     //Then
-    assertEquals(2, list.size());
+    assertEquals(2, medicalRecordList.size());
   }
 
   @Test
@@ -240,17 +227,6 @@ public class JsonConverterTest {
   }
 
   @Test
-  void shouldReadJsonFileReturnDataString() throws IOException {
-    //Given
-    String filePath = "src/test/resources/testReadFile.json";
-    //When
-    String actual = classUnderTest.readData(filePath);
-    //Then
-    assertFalse(actual.isEmpty());
-    assertEquals("[\n{\n\"Test\": \"value\"\n}\n]", actual);
-  }
-
-  @Test
   void shouldReadJsonEmptyFileReturnEmptyData() throws IOException {
     //Given
     String filePath = "src/test/resources/empty.json";
@@ -258,43 +234,6 @@ public class JsonConverterTest {
     String actual = classUnderTest.readData(filePath);
     //Then
 
-    //TODO: 05/08/2021 return exception instead of an empty String
     assertTrue(actual.isEmpty());
   }
-
-  @Disabled
-  @Test
-  void shouldReadNoJsonFileReturnException() {
-    //Given
-    String filePath = "";
-
-    //When
-
-    //Then
-    assertThrows(IOException.class, () -> classUnderTest.readData(filePath));
-  }
-
-  @Disabled
-  @Test
-  void shouldReturnExceptionWhenEmptyJsonFileToDeserialize() {
-    //Given
-    String filePath = "";
-    //When
-    Exception exception = (Exception) classUnderTest.convertJsonToObject(filePath);
-    //Then
-
-    assertEquals("File not found or empty", exception.getMessage());
-  }
-
-  @Disabled
-  @Test
-  void shouldReturnExceptionWhenJsonFileToDeserializeIsWrong() {
-    //Given
-    String testFilePath = "src/test/resources/personsTest.json";
-
-    //When
-    classUnderTest.convertJsonToObject(testFilePath);
-    //Then
-  }
-
 }

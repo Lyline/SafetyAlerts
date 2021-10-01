@@ -11,10 +11,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Component
 public class JsonConverter<T> {
@@ -25,32 +23,32 @@ public class JsonConverter<T> {
     ObjectMapper mapper = new ObjectMapper();
     mapper.registerModule(new DateTimeModule());
 
-    Map<String, T> map = new HashMap<>();
+    List<T> list = new ArrayList<>();
     String data = "";
 
     data = readData(inputFilePath);
 
     try {
       if (inputFilePath.contains("person")) {
-        List<Person> value = Arrays.asList(mapper.readValue(data, Person[].class));
+        Person[] value = mapper.readValue(data, Person[].class);
         for (Person person : value) {
-          map.put(person.getFirstName() + person.getLastName(), (T) person);
+          list.add((T) person);
         }
       } else if (inputFilePath.contains("fireStation")) {
-        List<FireStation> value = Arrays.asList(mapper.readValue(data, FireStation[].class));
+        FireStation[] value = mapper.readValue(data, FireStation[].class);
         for (FireStation fireStation : value) {
-          map.put(fireStation.getStation() + "-" + fireStation.getAddress(), (T) fireStation);
+          list.add((T) fireStation);
         }
       } else if (inputFilePath.contains("medicalRecord")) {
-        List<MedicalRecord> value = Arrays.asList(mapper.readValue(data, MedicalRecord[].class));                                                //
+        MedicalRecord[] value = mapper.readValue(data, MedicalRecord[].class);                                                //
         for (MedicalRecord medicalRecord : value) {
-          map.put(medicalRecord.getFirstName() + medicalRecord.getLastName(), (T) medicalRecord);
+          list.add((T) medicalRecord);
         }
       }
     } catch (JsonProcessingException e) {
       e.printStackTrace();
     }
-    return (T) map;
+    return (T) list;
   }
 
   public void convertObjectToJson(String outputFilePath, List<T> objectList) {
@@ -58,7 +56,7 @@ public class JsonConverter<T> {
     mapper.registerModule(new DateTimeModule());
 
     try {
-      mapper.writeValue(new File(outputFilePath), objectList);
+      mapper.writerWithDefaultPrettyPrinter().writeValue(new File(outputFilePath), objectList);
     } catch (IOException e) {
       e.printStackTrace();
     }
