@@ -5,17 +5,13 @@ import fr.lyline.SafetyAlerts.model.MedicalRecord;
 import java.util.List;
 
 public interface MedicalRecordService {
-  MedicalRecord getMedicalRecordById(String id);
+  MedicalRecord getMedicalRecordByFirstNameAndLastName(String firstName, String lastName);
 
   List<MedicalRecord> getAllMedicalRecords();
 
-  MedicalRecord addMedicalRecord(MedicalRecord medicalRecord);
+  boolean addMedicalRecord(MedicalRecord medicalRecord);
 
-  void addAllMedicalRecords(List<MedicalRecord> list);
+  boolean updateMedicalRecord(MedicalRecord medicalRecordToUpDate);
 
-  MedicalRecord upDateMedicalRecord(String id, MedicalRecord medicalRecordToUpDate);
-
-  void removeMedicalRecordById(String id);
-
-  void removeAllMedicalRecords();
+  boolean removeMedicalRecordByFirstNameAndLastName(String firstName, String lastName);
 }

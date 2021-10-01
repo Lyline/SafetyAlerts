@@ -19,46 +19,46 @@ public class MedicalRecordController {
     List<MedicalRecord> response = service.getAllMedicalRecords();
     if (!response.isEmpty()) {
       return new ResponseEntity<>(response, HttpStatus.OK);
-    } else return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    } else return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
   }
 
   @GetMapping("/medicalrecords/{firstName}_{lastName}")
   public ResponseEntity<MedicalRecord> getMedicalRecord(@PathVariable(value = "firstName") String firstName,
                                                         @PathVariable(value = "lastName") String lastName) {
-    MedicalRecord response = service.getMedicalRecordById(firstName + lastName);
+    MedicalRecord response = service.getMedicalRecordByFirstNameAndLastName(firstName, lastName);
     if (response != null) {
       return new ResponseEntity<>(response, HttpStatus.OK);
     } else return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
   }
 
   @PostMapping("/medicalrecords")
-  public ResponseEntity<MedicalRecord> addMedicalRecord(@RequestBody MedicalRecord medicalRecord) {
+  public ResponseEntity<Boolean> addMedicalRecord(@RequestBody MedicalRecord medicalRecord) {
     MedicalRecord medicalRecordIsExist =
-        service.getMedicalRecordById(medicalRecord.getFirstName() + medicalRecord.getLastName());
+        service.getMedicalRecordByFirstNameAndLastName(medicalRecord.getFirstName(), medicalRecord.getLastName());
 
     if (medicalRecordIsExist == null) {
-      MedicalRecord response = service.addMedicalRecord(medicalRecord);
-      return new ResponseEntity<>(response, HttpStatus.CREATED);
-    } else return new ResponseEntity<>(medicalRecordIsExist, HttpStatus.CONFLICT);
+      service.addMedicalRecord(medicalRecord);
+      return new ResponseEntity<>(HttpStatus.CREATED);
+    } else return new ResponseEntity<>(HttpStatus.CONFLICT);
   }
 
   @PatchMapping("/medicalrecords/{firstName}_{lastName}")
-  public ResponseEntity<MedicalRecord> upDateMedicalRecord(@PathVariable(value = "firstName") String firstName,
-                                                           @PathVariable(value = "lastName") String lastName,
-                                                           @RequestBody MedicalRecord medicalRecordToUpdate) {
-    MedicalRecord medicalRecordIsExist = service.getMedicalRecordById(firstName + lastName);
+  public ResponseEntity<Boolean> upDateMedicalRecord(@PathVariable(value = "firstName") String firstName,
+                                                     @PathVariable(value = "lastName") String lastName,
+                                                     @RequestBody MedicalRecord medicalRecordToUpdate) {
+    MedicalRecord medicalRecordIsExist = service.getMedicalRecordByFirstNameAndLastName(firstName, lastName);
     if (medicalRecordIsExist != null) {
-      MedicalRecord response = service.upDateMedicalRecord(firstName + lastName, medicalRecordToUpdate);
-      return new ResponseEntity<>(response, HttpStatus.OK);
-    } else return new ResponseEntity<>(null, HttpStatus.NOT_MODIFIED);
+      service.updateMedicalRecord(medicalRecordToUpdate);
+      return new ResponseEntity<>(HttpStatus.OK);
+    } else return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
   }
 
   @DeleteMapping("/medicalrecords/{firstName}_{lastName}")
   public ResponseEntity deleteMedicalRecord(@PathVariable(value = "firstName") String firstName,
                                             @PathVariable(value = "lastName") String lastName) {
-    MedicalRecord medicalRecordIsExist = service.getMedicalRecordById(firstName + lastName);
+    MedicalRecord medicalRecordIsExist = service.getMedicalRecordByFirstNameAndLastName(firstName, lastName);
     if (medicalRecordIsExist != null) {
-      service.removeMedicalRecordById(firstName + lastName);
+      service.removeMedicalRecordByFirstNameAndLastName(firstName, lastName);
       return new ResponseEntity(HttpStatus.OK);
     } else return new ResponseEntity(HttpStatus.NOT_FOUND);
   }

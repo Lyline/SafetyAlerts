@@ -16,8 +16,8 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
   }
 
   @Override
-  public MedicalRecord getMedicalRecordById(String id) {
-    return repository.findById(id);
+  public MedicalRecord getMedicalRecordByFirstNameAndLastName(String firstName, String lastName) {
+    return repository.findByFirstNameAndLastName(firstName, lastName);
   }
 
   @Override
@@ -26,43 +26,45 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
   }
 
   @Override
-  public MedicalRecord addMedicalRecord(MedicalRecord medicalRecord) {
+  public boolean addMedicalRecord(MedicalRecord medicalRecord) {
     if (medicalRecord.getFirstName() != null
         && medicalRecord.getLastName() != null
         && medicalRecord.getBirthdate() != null) {
-      return repository.add(medicalRecord);
-    } else return null;
+      boolean result = repository.add(medicalRecord);
+      return result;
+    } else return false;
   }
 
   @Override
-  public void addAllMedicalRecords(List<MedicalRecord> list) {
-    for (MedicalRecord medicalRecord : list) addMedicalRecord(medicalRecord);
-  }
-
-  @Override
-  public MedicalRecord upDateMedicalRecord(String id, MedicalRecord medicalRecordToUpDate) {
-    MedicalRecord medicalRecord = repository.findById(id);
+  public boolean updateMedicalRecord(MedicalRecord medicalRecordToUpDate) {
+    MedicalRecord medicalRecord = repository.findByFirstNameAndLastName(medicalRecordToUpDate.getFirstName(),
+        medicalRecordToUpDate.getLastName());
     if (medicalRecord != null) {
-      if (medicalRecordToUpDate.getBirthdate() != null) {
-        medicalRecord.setBirthdate(medicalRecordToUpDate.getBirthdate());
+      if (!medicalRecord.getBirthdate().equals(medicalRecordToUpDate.getBirthdate())) {
+        //the birthdate must be not null on the medical record
+        if (medicalRecordToUpDate.getBirthdate() != null) {
+          medicalRecord.setBirthdate(medicalRecordToUpDate.getBirthdate());
+        } else return false;
       }
-      if (medicalRecordToUpDate.getMedications() != null) {
+      if (!medicalRecord.getMedications().equals(medicalRecordToUpDate.getMedications())) {
         medicalRecord.setMedications(medicalRecordToUpDate.getMedications());
       }
-      if (medicalRecordToUpDate.getAllergies() != null) {
+      if (!medicalRecord.getAllergies().equals(medicalRecordToUpDate.getAllergies())) {
         medicalRecord.setAllergies(medicalRecordToUpDate.getAllergies());
       }
+      repository.update(medicalRecord);
+      return true;
+    } else return false;
+  }
+
+  @Override
+  public boolean removeMedicalRecordByFirstNameAndLastName(String firstName, String lastName) {
+    MedicalRecord medic = repository.findByFirstNameAndLastName(firstName, lastName);
+
+    if (medic != null) {
+      repository.deleteByFirstNameAndLastName(firstName, lastName);
+      return true;
     }
-    return repository.update(id, medicalRecord);
-  }
-
-  @Override
-  public void removeMedicalRecordById(String id) {
-    repository.deleteById(id);
-  }
-
-  @Override
-  public void removeAllMedicalRecords() {
-    repository.deleteAll();
+    return false;
   }
 }

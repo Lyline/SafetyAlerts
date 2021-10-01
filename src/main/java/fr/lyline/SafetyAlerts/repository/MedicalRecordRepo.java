@@ -7,15 +7,11 @@ import java.util.List;
 public interface MedicalRecordRepo {
   List<MedicalRecord> findAll();
 
-  MedicalRecord findById(String firstNameLastName);
+  MedicalRecord findByFirstNameAndLastName(String firstName, String lastName);
 
-  MedicalRecord add(MedicalRecord medicalRecord);
+  boolean add(MedicalRecord medicalRecord);
 
-  void addAll(List<MedicalRecord> list);
+  boolean update(MedicalRecord medicalRecordToUpDate);
 
-  MedicalRecord update(String id, MedicalRecord medicalRecordToUpDate);
-
-  void deleteById(String id);
-
-  void deleteAll();
+  boolean deleteByFirstNameAndLastName(String firstName, String lastName);
 }
