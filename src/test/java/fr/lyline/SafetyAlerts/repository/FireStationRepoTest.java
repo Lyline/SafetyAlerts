@@ -1,121 +1,183 @@
 package fr.lyline.SafetyAlerts.repository;
 
 import fr.lyline.SafetyAlerts.model.FireStation;
+import fr.lyline.SafetyAlerts.utils.JsonConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-@SpringBootTest
 public class FireStationRepoTest {
-
-  @Autowired
-  private FireStationRepoImpl classUnderTest;
+  private final JsonConverter data = mock(JsonConverter.class);
+  private final FireStationRepoImpl classUnderTest = new FireStationRepoImpl(data);
+  private final List<FireStation> stationList = new ArrayList<>();
+  String fileJsonPath = "src/main/resources/fireStation.json";
+  FireStation station1 = new FireStation(1, "742 Evergreen Terrace");
+  FireStation station2 = new FireStation(2, "42 Wallaby Way");
+  FireStation station3 = new FireStation(3, "42 Wallaby Way");
 
   @BeforeEach
   void setUp() {
-    classUnderTest = new FireStationRepoImpl();
+    stationList.add(station1);
+    stationList.add(station2);
+    stationList.add(station3);
   }
 
   @Test
-  void getAllAddressTest() {
+  void whenGetAllStationsReturnTreeStations() {
     //Given
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(stationList);
 
     //When
-    List<FireStation> result = classUnderTest.findAll();
-
-    //Then
-    assertEquals(12, result.size());
-  }
-
-  @Test
-  void getAddressListFireStationByIdTest() {
-    //Given
-
-    //When
-    FireStation result = classUnderTest.findById("4-112 Steppes Pl");
-
-    //Then
-    assertEquals(4, result.getStation());
-  }
-
-  @Test
-  void addFireStationTest() {
-    //Given
-    FireStation fireStationTest = new FireStation();
-    fireStationTest.setStation(6);
-    fireStationTest.setAddress("NoWhere");
-
-    //When
-    classUnderTest.add(fireStationTest);
-
-    //Then
     List<FireStation> actual = classUnderTest.findAll();
-    assertEquals(13, actual.size());
+
+    //Then
+    assertEquals(3, actual.size());
   }
 
   @Test
-  void addAllFireStationTest() {
+  void whenGetAllStationsReturnReturnAnEmptyList() {
     //Given
-    FireStation fireStation1 = new FireStation();
-    fireStation1.setStation(1);
-    fireStation1.setAddress("NoWhere");
-
-    FireStation fireStation2 = new FireStation();
-    fireStation2.setStation(3);
-    fireStation2.setAddress("Gotham St");
-
-    List<FireStation> list = new ArrayList<>();
-    list.add(fireStation1);
-    list.add(fireStation2);
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(List.of());
 
     //When
-    classUnderTest.addAll(list);
-
-    //Then
     List<FireStation> actual = classUnderTest.findAll();
-    assertEquals(14, actual.size());
+
+    //Then
+    assertTrue(actual.isEmpty());
   }
 
   @Test
-  void upDateFireStationTest() {
+  void whenGetExistingPersonReturnThisPerson() {
     //Given
-    FireStation fsToUpdate = new FireStation();
-    fsToUpdate.setStation(2);
-    fsToUpdate.setAddress("NoWhere");
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(stationList);
 
     //When
-    classUnderTest.update("1-947 E. Rose Dr", fsToUpdate);
+    FireStation actual = classUnderTest.findByStationNumberAndAddress(1, "742 Evergreen Terrace");
 
     //Then
-    assertEquals("NoWhere", classUnderTest.findById("2-NoWhere").getAddress());
+    assertSame(station1, actual);
   }
 
   @Test
-  void deleteFireStationByIdTest() {
+  void whenGetNotExistingPersonReturnNull() {
     //Given
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(stationList);
 
     //When
-    classUnderTest.deleteById("1-644 Gershwin Cir");
+    FireStation actual = classUnderTest.findByStationNumberAndAddress(1, "NoWhere");
 
     //Then
-    assertEquals(null, classUnderTest.findById("1-644 Gershwin Cir"));
+    assertNull(actual);
   }
 
   @Test
-  void deleteAllFireStationTest() {
+  void whenAddNewStationReturnTrueAndAddNewStation() {
     //Given
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(stationList);
+    FireStation station = new FireStation(1, "221B Baker Street");
 
     //When
-    classUnderTest.deleteAll();
+    boolean result = classUnderTest.add(station);
 
     //Then
-    assertTrue(classUnderTest.findAll().isEmpty());
+    FireStation actual = classUnderTest.findByStationNumberAndAddress(1, "221B Baker Street");
+    assertTrue(result);
+    assertSame(station, actual);
+  }
+
+  @Test
+  void whenAddNewIncompleteStationReturnFalse() {
+    //Given
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(stationList);
+    FireStation station = new FireStation();
+    station.setAddress("221B Baker Street");
+
+    //When
+    boolean result = classUnderTest.add(station);
+
+    //Then
+    FireStation actual = classUnderTest.findByStationNumberAndAddress(1, "221B Baker Street");
+    assertFalse(result);
+    assertNotSame(station, actual);
+    assertNull(actual);
+  }
+
+  @Test
+  void whenAddNewExistingStationReturnFalse() {
+    //Given
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(stationList);
+
+    //When
+    boolean result = classUnderTest.add(station1);
+
+    //Then
+    FireStation actual = classUnderTest.findByStationNumberAndAddress(1, "742 Evergreen Terrace");
+    assertFalse(result);
+    assertNotNull(actual);
+  }
+
+  @Test
+  void whenUpdateExistingStationReturnTrue() {
+    //Given
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(stationList);
+    FireStation fireStationToUpdate = new FireStation(1, "221B Baker Street");
+
+    //When
+    boolean actual = classUnderTest.update(station3.getStation(), station3.getAddress(), fireStationToUpdate);
+
+    //Then
+    assertTrue(actual);
+  }
+
+  @Test
+  void whenUpdateExistingStationByAnAnotherExistingStationReturnTrue() {
+    //Given
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(stationList);
+    FireStation fireStationToUpdate = new FireStation(3, "42 Wallaby Way");
+
+    //When
+    boolean result = classUnderTest.update(station1.getStation(), station1.getAddress(), fireStationToUpdate);
+
+    //Then
+    assertTrue(result);
+  }
+
+  @Test
+  void whenUpdateNotExistingStationReturnFalse() {
+    //Given
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(stationList);
+    FireStation fireStationNotExist = new FireStation(1, "NoWhere");
+
+    //When
+    boolean result = classUnderTest.update(fireStationNotExist.getStation(), fireStationNotExist.getAddress(), station1);
+
+    //Then
+    assertFalse(result);
+  }
+
+  @Test
+  void whenDeleteExistingStationReturnTrue() {
+    //Given
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(stationList);
+    //When
+    boolean actual = classUnderTest.deleteByStationAndAddress(2, "42 Wallaby Way");
+    //Then
+    assertTrue(actual);
+  }
+
+  @Test
+  void whenDeleteNotExistingStationReturnFalse() {
+    //Given
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(stationList);
+    //When
+    boolean actual = classUnderTest.deleteByStationAndAddress(12, "42 Wallaby Way");
+    //Then
+    assertFalse(actual);
   }
 }

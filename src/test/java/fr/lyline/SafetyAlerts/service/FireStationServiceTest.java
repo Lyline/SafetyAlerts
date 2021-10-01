@@ -4,63 +4,68 @@ import fr.lyline.SafetyAlerts.model.FireStation;
 import fr.lyline.SafetyAlerts.repository.FireStationRepoImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-@SpringBootTest
+
 public class FireStationServiceTest {
 
-  @Autowired
-  FireStationService classUnderTest;
-
-  @Autowired
-  FireStationRepoImpl repository;
+  private final List<FireStation> stationList = new ArrayList<>();
+  FireStationRepoImpl repository = mock(FireStationRepoImpl.class);
+  FireStationServiceImpl classUnderTest = new FireStationServiceImpl(repository);
+  FireStation station1 = new FireStation(1, "742 Evergreen Terrace");
+  FireStation station2 = new FireStation(1, "42 Wallaby Way");
+  FireStation station3 = new FireStation(2, "42 Wallaby Way");
 
   @BeforeEach
   void setUp() {
-    repository = new FireStationRepoImpl();
-    classUnderTest = new FireStationServiceImpl(repository);
+    stationList.add(station1);
+    stationList.add(station2);
+    stationList.add(station3);
   }
 
   @Test
-  void getFireStationByValidAddress() {
+  void getFireStationByValidAddressReturnTwoResults() {
     //Given
+    when(repository.findAll()).thenReturn(stationList);
     //When
-    List<Integer>
-        actual = classUnderTest.getFireStation("112 Steppes Pl");
+    List<Integer> actual = classUnderTest.getFireStation("42 Wallaby Way");
     //Then
-    assertEquals(Arrays.asList(3, 4), actual);
+    assertEquals(Arrays.asList(1, 2), actual);
   }
 
   @Test
-  void getFireStationByIdNotValidAddress() {
+  void getFireStationNotValideAddressReturnNull() {
     //Given
+    when(repository.findAll()).thenReturn(List.of());
+
     //When
-    List<Integer> actual = classUnderTest.getFireStation("");
+    List<Integer> actual = classUnderTest.getFireStation("NoWhere");
+
     //Then
     assertTrue(actual.isEmpty());
   }
 
   @Test
-  void getAllFireStations() {
+  void getAllFireStationsReturnTwoResults() {
     //Given
+    when(repository.findAll()).thenReturn(stationList);
     //When
     List<Integer> actual = classUnderTest.getAllFireStations();
     //Then
-    assertEquals(List.of(1, 2, 3, 4), actual);
+    assertEquals(List.of(1, 2), actual);
   }
 
   @Test
   void getAllFireStationsReturnEmptyList() {
     //Given
-    repository.deleteAll();
+    when(repository.findAll()).thenReturn(List.of());
     //When
     List<Integer> actual = classUnderTest.getAllFireStations();
     //Then
@@ -68,121 +73,77 @@ public class FireStationServiceTest {
   }
 
   @Test
-  void addAddressDependantFireStationToRepositoryValidate() {
+  void whenAddNewValidateAddressWithFireStationReturnTrue() {
     //Given
-    FireStation fs = new FireStation();
-    fs.setStation(5);
-    fs.setAddress("NoWhere");
+    FireStation fireStationAdd = new FireStation(2, "NoWhere");
+    when(repository.add(fireStationAdd)).thenReturn(true);
+
     //When
-    classUnderTest.addFireStation(fs);
+    boolean actual = classUnderTest.addFireStation(fireStationAdd);
+
     //Then
-    List<Integer> actual = classUnderTest.getFireStation("NoWhere");
-    assertEquals(List.of(5), actual);
+    assertTrue(actual);
   }
 
   @Test
-  void addAddressDependantFireStationToRepositoryNotValidate() {
+  void whenAddNewExistingAddressWithFireStationReturnFalse() {
     //Given
-    FireStation fs = new FireStation();
-    fs.setAddress("NoWhere");
+    FireStation fireStationAdd = new FireStation(2, "42 Wallaby Way");
+
     //When
-    classUnderTest.addFireStation(fs);
+    boolean actual = classUnderTest.addFireStation(fireStationAdd);
+
     //Then
-    List<Integer> actual = classUnderTest.getFireStation("NoWhere");
-    assertTrue(actual.isEmpty());
+    assertFalse(actual);
   }
 
   @Test
-  void addTwoAddressesDependantFireStationToRepositoryValidate() {
+  void whenUpdateValideAddressFireStationReturnTrue() {
     //Given
-    FireStation fs1 = new FireStation();
-    fs1.setStation(1);
-    fs1.setAddress("NoWhere");
+    FireStation fireStationToUpdate = new FireStation(5, "42 Wallaby Way");
+    when(repository.update(station3.getStation(), station3.getAddress(), fireStationToUpdate)).thenReturn(true);
 
-    FireStation fs2 = new FireStation();
-    fs2.setStation(2);
-    fs2.setAddress("New address");
-
-    List<FireStation> list = new ArrayList<>();
-    list.add(fs1);
-    list.add(fs2);
     //When
-    classUnderTest.addAllFireStations(list);
-    //Then
-    List<Integer> actual1 = classUnderTest.getFireStation("NoWhere");
-    List<Integer> actual2 = classUnderTest.getFireStation("New address");
+    boolean actual = classUnderTest.updateFireStation(station3.getStation(), station3.getAddress(), fireStationToUpdate);
 
-    assertEquals(List.of(1), actual1);
-    assertEquals(List.of(2), actual2);
+    //Then
+    assertTrue(actual);
   }
 
   @Test
-  void addOneValideAddressAndOneNotValideAddressReturnOneValidAddress() {
+  void whenUpdateAddressNotExistReturnFalse() {
     //Given
-    FireStation fs1 = new FireStation();
-    fs1.setStation(1);
-    fs1.setAddress("NoWhere");
+    FireStation fireStationNotExist = new FireStation();
+    FireStation fireStationToUpdate = new FireStation(5, "42 Wallaby Way");
+    when(repository.update(fireStationNotExist.getStation(), fireStationNotExist.getAddress(), fireStationToUpdate)).thenReturn(false);
 
-    FireStation fs2 = new FireStation();
-    fs2.setAddress("New address");
-
-    List<FireStation> list = new ArrayList<>();
-    list.add(fs1);
-    list.add(fs2);
     //When
-    classUnderTest.addAllFireStations(list);
+    boolean actual = classUnderTest.updateFireStation(fireStationNotExist.getStation(), fireStationNotExist.getAddress(), fireStationToUpdate);
     //Then
-    List<Integer> actual1 = classUnderTest.getFireStation("NoWhere");
-    List<Integer> actual2 = classUnderTest.getFireStation("New address");
-
-    assertEquals(List.of(1), actual1);
-    assertTrue(actual2.isEmpty());
+    assertFalse(actual);
   }
 
   @Test
-  void upDateAddressFireStationToRepositoryValide() {
+  void whenRemoveExistingFireStationReturnTrue() {
     //Given
-    FireStation fs = new FireStation();
-    fs.setStation(1);
-    fs.setAddress("1509 Culver St");
+    when(repository.deleteByStationAndAddress(2, "42 Wallaby Way")).thenReturn(true);
+
     //When
-    classUnderTest.upDateFireStation("1509 Culver St", "3", fs);
+    boolean actual = classUnderTest.removeFireStation("2", "42 Wallaby Way");
+
     //Then
-    List<Integer> actual = classUnderTest.getFireStation("1509 Culver St");
-    assertEquals(List.of(1), actual);
+    assertTrue(actual);
   }
 
   @Test
-  void upDateAddressNotExistToRepositoryNotValidate() {
+  void whenRemoveNotExistingFireStationReturnFalse() {
     //Given
-    FireStation fs = new FireStation();
-    fs.setStation(3);
-    fs.setAddress("NoWhere");
-    //When
-    classUnderTest.upDateFireStation("1509 Culver St", "3", fs);
-    //Then
-    List<Integer> actual = classUnderTest.getFireStation("NoWhere");
-    assertTrue(actual.isEmpty());
-  }
+    when(repository.deleteByStationAndAddress(2, "NoWhere")).thenReturn(false);
 
-  @Test
-  void removeFireStationToRepository() {
-    //Given
     //When
-    classUnderTest.removeFireStation("3", "1509 Culver St");
-    //Then
-    List<Integer> actual = classUnderTest.getFireStation("1509 Culver St");
-    assertTrue(actual.isEmpty());
-  }
+    boolean actual = classUnderTest.removeFireStation("2", "NoWhere");
 
-  @Test
-  void removeAllFireStationToRepository() {
-    //Given
-    //When
-    classUnderTest.removeAllFireStations();
     //Then
-    List<Integer> actual = classUnderTest.getAllFireStations();
-    assertTrue(actual.isEmpty());
+    assertFalse(actual);
   }
-
 }
