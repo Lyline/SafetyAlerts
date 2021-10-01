@@ -5,17 +5,14 @@ import fr.lyline.SafetyAlerts.model.Person;
 import java.util.List;
 
 public interface PersonService {
-  Person getPerson(String id);
+  Person getPerson(String firstName, String lastName);
 
   List<Person> getAllPersons();
 
-  Person addPerson(Person person);
+  boolean addPerson(Person person);
 
-  void addAllPersons(List<Person> list);
+  boolean upDatePerson(Person personToUpDate);
 
-  Person upDatePerson(String id, Person personToUpDate);
+  boolean removePerson(String firstName, String lastName);
 
-  void removePerson(String id);
-
-  void removeAllPersons();
 }

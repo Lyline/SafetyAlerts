@@ -23,28 +23,29 @@ public class PersonController {
     } else return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
   }
 
-  @GetMapping(value = "/persons/{firstName}_{lastName}")
-  public ResponseEntity<Person> getPerson(@PathVariable(value = "firstName") String firstName,
-                                          @PathVariable(value = "lastName") String lastName) {
-    Person response = service.getPerson(firstName + lastName);
+  @GetMapping("/persons/{firstName}_{lastName}")
+  public ResponseEntity<Person> getPerson(@PathVariable() String firstName,
+                                          @PathVariable() String lastName) {
+    Person response = service.getPerson(firstName, lastName);
 
     if (response != null) {
-      return new ResponseEntity<>(response, HttpStatus.FOUND);
+      return new ResponseEntity<>(response, HttpStatus.OK);
     } else return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
   }
 
   @PostMapping("/persons")
-  public ResponseEntity<Person> addPerson(@RequestBody Person person) {
-    Person personIsPresent = service.getPerson(person.getFirstName() + person.getLastName());
+  public ResponseEntity<Boolean> addPerson(@RequestBody Person person) {
+
+    Person personIsPresent = service.getPerson(person.getFirstName(), person.getLastName());
 
     if (personIsPresent == null) {
-      Person response = service.addPerson(person);
-      if (response != null) {
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+      boolean response = service.addPerson(person);
+      if (response) {
+        return new ResponseEntity<>(HttpStatus.CREATED);
       } else {
-        return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
       }
-    } else return new ResponseEntity<>(personIsPresent, HttpStatus.CONFLICT);
+    } else return new ResponseEntity<>(HttpStatus.CONFLICT);
   }
 
   @PatchMapping("/persons/{firstName}_{lastName}")
@@ -52,25 +53,25 @@ public class PersonController {
                                              @PathVariable(value = "lastName") String lastName,
                                              @RequestBody Person personToUpDate) {
 
-    String id = firstName + lastName;
-    Person personSaved = service.getPerson(id);
+    Person personSaved = service.getPerson(firstName, lastName);
 
     if (personSaved != null) {
-      Person personUpDated = service.upDatePerson(id, personToUpDate);
-      return new ResponseEntity<>(personUpDated, HttpStatus.OK);
-    } else return new ResponseEntity<>(null, HttpStatus.NOT_MODIFIED);
+      service.upDatePerson(personToUpDate);
+
+      return new ResponseEntity<>(HttpStatus.OK);
+    } else return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
   }
 
   @DeleteMapping("/persons/{firstName}_{lastName}")
   public ResponseEntity deletePerson(@PathVariable(value = "firstName") String firstName,
                                      @PathVariable(value = "lastName") String lastName) {
 
-    Person personToDelete = service.getPerson(firstName + lastName);
+    Person personToDelete = service.getPerson(firstName, lastName);
 
     if (personToDelete != null) {
-      service.removePerson(firstName + lastName);
+      service.removePerson(firstName, lastName);
       return new ResponseEntity(HttpStatus.OK);
-    } else return new ResponseEntity(HttpStatus.NO_CONTENT);
+    } else return new ResponseEntity(HttpStatus.NOT_FOUND);
 
   }
 

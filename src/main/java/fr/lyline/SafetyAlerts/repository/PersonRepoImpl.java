@@ -4,59 +4,93 @@ import fr.lyline.SafetyAlerts.model.Person;
 import fr.lyline.SafetyAlerts.utils.JsonConverter;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Repository
 public class PersonRepoImpl implements PersonRepo {
-  JsonConverter data = new JsonConverter();
-  private final Map<String, Person> personMap = (Map<String, Person>) data.convertJsonToObject("src/main/resources/person.json");
 
-  public PersonRepoImpl() {
+  JsonConverter data;
+  String fileJsonPath = "src/main/resources/person.json";
+
+  public PersonRepoImpl(JsonConverter data) {
+    this.data = data;
   }
 
   @Override
   public List<Person> findAll() {
-    return personMap.values().stream().collect(Collectors.toList());
+    List<Person> personDataList = (List<Person>) data.convertJsonToObject(fileJsonPath);
+    return new ArrayList<>(personDataList);
   }
 
   @Override
-  public Person findById(String firstNameLastName) {
-    return personMap.get(firstNameLastName);
+  public Person findById(String firstName, String lastName) {
+    List<Person> personDataList = (List<Person>) data.convertJsonToObject(fileJsonPath);
+    for (Person person : personDataList) {
+      if (person.getFirstName().equals(firstName) &&
+          person.getLastName().equals(lastName)) {
+        return person;
+      }
+    }
+    return null;
   }
 
   @Override
-  public Person add(Person person) {
-    personMap.put(person.getFirstName() + person.getLastName(), person);
-    return personMap.get(person.getFirstName() + person.getLastName());
-  }
+  public boolean add(Person person) {
+    List<Person> personDataList = (List<Person>) data.convertJsonToObject(fileJsonPath);
+    Person personIsExist = null;
 
-  @Override
-  public void addAll(List<Person> list) {
-    HashMap<String, Person> subList = new HashMap<>();
-
-    for (Person p : list) {
-      subList.put(p.getFirstName() + p.getLastName(), p);
+    for (Person p : personDataList) {
+      if (p.getFirstName().equals(person.getFirstName())) {
+        personIsExist = p;
+      }
     }
 
-    personMap.putAll(subList);
+    if (personIsExist == null) {
+      personDataList.add(person);
+      data.convertObjectToJson(fileJsonPath, personDataList);
+      return true;
+    } else return false;
   }
 
   @Override
-  public boolean update(String id, Person personToUpDate) {
-    Person person = findById(id);
-    return personMap.replace(id, person, personToUpDate);
+  public boolean update(Person person) {
+    ArrayList<Person> personDataList = (ArrayList<Person>) data.convertJsonToObject(fileJsonPath);
+    Person personIsExist = null;
+
+    for (Person p : personDataList) {
+      if (p.getFirstName().equals(person.getFirstName())) {
+        personIsExist = p;
+      }
+    }
+
+    if (personIsExist != null) {
+      personDataList.remove(personIsExist);
+      personDataList.add(person);
+
+      data.convertObjectToJson(fileJsonPath, personDataList);
+      return true;
+    } else {
+      return false;
+    }
   }
 
   @Override
-  public void deleteById(String id) {
-    personMap.remove(id);
-  }
+  public boolean deleteByFirstNameAndLastName(String firstName, String lastName) {
+    List<Person> personDataList = (List<Person>) data.convertJsonToObject(fileJsonPath);
+    Person personToDelete = null;
 
-  @Override
-  public void deleteAll() {
-    personMap.clear();
+    for (Person p : personDataList) {
+      if (p.getFirstName().equals(firstName) && p.getLastName().equals(lastName)) {
+        personToDelete = p;
+      }
+    }
+    if (personToDelete != null) {
+      personDataList.remove(personToDelete);
+      data.convertObjectToJson(fileJsonPath, personDataList);
+      return true;
+    } else {
+      return false;
+    }
   }
 }

@@ -7,15 +7,11 @@ import java.util.List;
 public interface PersonRepo {
   List<Person> findAll();
 
-  Person findById(String firstNameLastName);
+  Person findById(String firstName, String lastName);
 
-  Person add(Person person);
+  boolean add(Person person);
 
-  void addAll(List<Person> list);
+  boolean update(Person person);
 
-  boolean update(String id, Person personToUpDate);
-
-  void deleteById(String id);
-
-  void deleteAll();
+  boolean deleteByFirstNameAndLastName(String firstName, String lastName);
 }
