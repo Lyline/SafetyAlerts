@@ -2,213 +2,183 @@ package fr.lyline.SafetyAlerts.service;
 
 import fr.lyline.SafetyAlerts.model.MedicalRecord;
 import fr.lyline.SafetyAlerts.repository.MedicalRecordRepoImpl;
-import org.assertj.core.util.Arrays;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-@SpringBootTest
 public class MedicalRecordServiceTest {
-
-  DateTimeFormatter dtf = DateTimeFormat.forPattern("MM/dd/yyyy");
-  @Autowired
-  private MedicalRecordService classUnderTest;
-  @Autowired
-  private MedicalRecordRepoImpl repository;
+  private final List<MedicalRecord> medicList = new ArrayList<>();
+  MedicalRecordRepoImpl repository = mock(MedicalRecordRepoImpl.class);
+  MedicalRecordServiceImpl classUnderTest = new MedicalRecordServiceImpl(repository);
+  MedicalRecord medic1 = new MedicalRecord("Homer", "Simpson", new DateTime("1956-05-12"),
+      new String[]{"duff 250cl"}, new String[]{"work"});
+  MedicalRecord medic2 = new MedicalRecord("Marge", "Simpson", new DateTime("1957-03-19"),
+      new String[]{}, new String[]{});
+  MedicalRecord medic3 = new MedicalRecord("Bart", "Simpson", new DateTime("2010-02-23"),
+      new String[]{}, new String[]{"school", "vegetables"});
 
   @BeforeEach
   void setUp() {
-    repository = new MedicalRecordRepoImpl();
-    classUnderTest = new MedicalRecordServiceImpl(repository);
+    medicList.add(medic1);
+    medicList.add(medic2);
+    medicList.add(medic3);
   }
 
   @Test
-  void getMedicalRecordByIdValid() {
+  void whenGetValidMedicalRecordByFirstNameAndLastNameReturnThisRecord() {
     //Given
+    when(repository.findByFirstNameAndLastName("Marge", "Simpson")).thenReturn(medic2);
+
     //When
-    MedicalRecord actual = classUnderTest.getMedicalRecordById("JohnBoyd");
+    MedicalRecord actual = classUnderTest.getMedicalRecordByFirstNameAndLastName("Marge", "Simpson");
+
     //Then
-    assertEquals("John", actual.getFirstName());
-    assertEquals("Boyd", actual.getLastName());
+    assertSame(medic2, actual);
   }
 
   @Test
-  void getMedicalRecordByIdNotValid() {
+  void whenGetMedicalRecordByFirstNameAndLastNameNotValidReturnNull() {
     //Given
+    when(repository.findByFirstNameAndLastName("John", "Doe")).thenReturn(null);
+
     //When
-    MedicalRecord actual = classUnderTest.getMedicalRecordById("");
+    MedicalRecord actual = classUnderTest.getMedicalRecordByFirstNameAndLastName("John", "Doe");
+
     //Then
     assertNull(actual);
   }
 
   @Test
-  void getAllMedicalRecordsValid() {
+  void whenGetAllMedicalRecordsValidReturnThreeResults() {
     //Given
+    when(repository.findAll()).thenReturn(medicList);
+
     //When
     List<MedicalRecord> actual = classUnderTest.getAllMedicalRecords();
     //Then
-    assertEquals(23, actual.size());
+    assertEquals(3, actual.size());
   }
 
   @Test
-  void getAllMedicalRecordsReturnEmptyList() {
+  void whenGetAllMedicalRecordsNotValidReturnEmptyList() {
     //Given
-    repository.deleteAll();
+    when(repository.findAll()).thenReturn(List.of());
+
     //When
     List<MedicalRecord> actual = classUnderTest.getAllMedicalRecords();
+
     //Then
     assertTrue(actual.isEmpty());
   }
 
   @Test
-  void addMedicalRecordToRepositoryValidate() {
+  void whenAddValidMedicalRecordReturnTrue() {
+    //Given
+    MedicalRecord medic = new MedicalRecord("John", "Doe", new DateTime("1956-05-12"),
+        new String[]{}, new String[]{});
+    when(repository.add(medic)).thenReturn(true);
+
+    //When
+    boolean actual = classUnderTest.addMedicalRecord(medic);
+
+    //Then
+    assertTrue(actual);
+  }
+
+  @Test
+  void whenAddNotValidMedicalRecordReturnFalse() {
     //Given
     MedicalRecord medRecord = new MedicalRecord();
     medRecord.setFirstName("John");
     medRecord.setLastName("Doe");
-    medRecord.setBirthdate(new DateTime().withDate(2021, 1, 1));
-    medRecord.setMedications(new String[]{"aspirin"});
-    medRecord.setAllergies(new String[]{"nuts"});
+
     //When
-    classUnderTest.addMedicalRecord(medRecord);
+    boolean actual = classUnderTest.addMedicalRecord(medRecord);
+
     //Then
-    MedicalRecord actual = classUnderTest.getMedicalRecordById("JohnDoe");
-    assertEquals(medRecord, actual);
+    assertFalse(actual);
   }
 
   @Test
-  void addMedicalRecordToRepositoryNotValidate() {
+  void whenAddExistingMedicalRecordReturnFalse() {
     //Given
-    MedicalRecord medRecord = new MedicalRecord();
-    medRecord.setFirstName("John");
-    medRecord.setLastName("Doe");
+    when(repository.add(medic1)).thenReturn(false);
+
     //When
-    classUnderTest.addMedicalRecord(medRecord);
+    boolean actual = classUnderTest.addMedicalRecord(medic1);
+
     //Then
-    MedicalRecord actual = classUnderTest.getMedicalRecordById("JohnDoe");
-    assertNull(actual);
+    assertFalse(actual);
   }
 
   @Test
-  void addTwoValidMedicalRecordToRepositoryValidate() {
+  void whenUpdateValidMedicalRecordReturnTrue() {
     //Given
-    MedicalRecord med1 = new MedicalRecord();
-    med1.setFirstName("John");
-    med1.setLastName("Doe");
-    med1.setBirthdate(new DateTime().withDate(2021, 1, 1));
+    MedicalRecord medic = new MedicalRecord("Homer", "Simpson", new DateTime("1956-05-01"),
+        new String[]{"vegetables"}, new String[]{""});
+    when(repository.findByFirstNameAndLastName("Homer", "Simpson")).thenReturn(medic1);
 
-    MedicalRecord med2 = new MedicalRecord();
-    med2.setFirstName("Jane");
-    med2.setLastName("Doe");
-    med2.setBirthdate(new DateTime().withDate(1980, 10, 11));
-
-    List<MedicalRecord> list = new ArrayList<>();
-    list.add(med1);
-    list.add(med2);
     //When
-    classUnderTest.addAllMedicalRecords(list);
+    boolean actual = classUnderTest.updateMedicalRecord(medic);
+
     //Then
-    MedicalRecord actual1 = classUnderTest.getMedicalRecordById("JohnDoe");
-    MedicalRecord actual2 = classUnderTest.getMedicalRecordById("JaneDoe");
-    assertEquals(med1, actual1);
-    assertEquals(med2, actual2);
+    assertTrue(actual);
   }
 
   @Test
-  void addOneValidMedicalRecordAndOneNotValidToRepositoryValidate() {
-    //Given
-    MedicalRecord med1 = new MedicalRecord();
-    med1.setFirstName("John");
-    med1.setLastName("Doe");
-    med1.setBirthdate(new DateTime().withDate(2021, 1, 1));
-
-    MedicalRecord med2 = new MedicalRecord();
-    med2.setFirstName("Jane");
-    med2.setLastName("Doe");
-
-    List<MedicalRecord> list = new ArrayList<>();
-    list.add(med1);
-    list.add(med2);
-    //When
-    classUnderTest.addAllMedicalRecords(list);
-    //Then
-    MedicalRecord actual1 = classUnderTest.getMedicalRecordById("JohnDoe");
-    MedicalRecord actual2 = classUnderTest.getMedicalRecordById("JaneDoe");
-    assertEquals(med1, actual1);
-    assertNull(actual2);
-  }
-
-  @Test
-  void upDateMedicalRecordToRepositoryValidate() {
+  void whenUpdateNotValidMedicalRecordReturnFalse() {
     //Given
     MedicalRecord medicalRecord = new MedicalRecord();
-    medicalRecord.setFirstName("John");
-    medicalRecord.setLastName("Boyd");
-    medicalRecord.setBirthdate(new DateTime().withDate(2021, 1, 1));
-    medicalRecord.setAllergies(new String[]{"sun"});
-    medicalRecord.setMedications(new String[]{"new medication"});
+    medicalRecord.setFirstName("Homer");
+    medicalRecord.setLastName("Simpson");
+    when(repository.findByFirstNameAndLastName("Homer", "Simpson")).thenReturn(medic1);
+
     //When
-    classUnderTest.upDateMedicalRecord("JohnBoyd", medicalRecord);
+    boolean actual = classUnderTest.updateMedicalRecord(medicalRecord);
+
     //Then
-    MedicalRecord actual = classUnderTest.getMedicalRecordById("JohnBoyd");
-    assertEquals("01/01/2021", actual.getBirthdate().toString(dtf));
-    assertArrayEquals(Arrays.array("sun"), actual.getAllergies());
-    assertArrayEquals(Arrays.array("new medication"), actual.getMedications());
+    assertFalse(actual);
   }
 
   @Test
-  void upDateMedicalRecordToRepositoryNotValidate() {
+  void whenUpDateNotExistMedicalRecordReturnFalse() {
     //Given
-    MedicalRecord medicalRecord = new MedicalRecord();
-    medicalRecord.setFirstName("John");
-    medicalRecord.setLastName("Doe");
+    MedicalRecord medic = new MedicalRecord("John", "Doe", new DateTime("1956-05-01"),
+        new String[]{"vegetables"}, new String[]{""});
+    when(repository.findByFirstNameAndLastName("John", "Doe")).thenReturn(null);
+
     //When
-    classUnderTest.upDateMedicalRecord("JohnBoyd", medicalRecord);
+    boolean actual = classUnderTest.updateMedicalRecord(medic);
+
     //Then
-    MedicalRecord actual = classUnderTest.getMedicalRecordById("JohnDoe");
-    assertNull(actual);
+    assertFalse(actual);
   }
 
   @Test
-  void upDateNotExistMedicalRecordToRepository() {
+  void whenRemoveExistingMedicalRecordByFirstNameAndLastNameReturnTrue() {
     //Given
-    MedicalRecord medicalRecord = new MedicalRecord();
-    medicalRecord.setFirstName("John");
-    medicalRecord.setLastName("Doe");
-    medicalRecord.setAllergies(new String[]{"sun"});
+    when(repository.findByFirstNameAndLastName("Homer", "Simpson")).thenReturn(medic1);
     //When
-    classUnderTest.upDateMedicalRecord("JohnDoe", medicalRecord);
+    boolean actual = classUnderTest.removeMedicalRecordByFirstNameAndLastName("Homer", "Simpson");
     //Then
-    MedicalRecord actual = classUnderTest.getMedicalRecordById("JohnDoe");
-    assertNull(actual);
+    assertTrue(actual);
   }
 
   @Test
-  void removeMedicalRecordByIdToRepository() {
+  void whenRemoveNotExistingMedicalRecordByFirstNameAndLastNameReturnFalse() {
     //Given
+    when(repository.findByFirstNameAndLastName("John", "Doe")).thenReturn(null);
     //When
-    classUnderTest.removeMedicalRecordById("JohnBoyd");
+    boolean actual = classUnderTest.removeMedicalRecordByFirstNameAndLastName("john", "Doe");
     //Then
-    MedicalRecord actual = classUnderTest.getMedicalRecordById("JohnBoyd");
-    assertNull(actual);
+    assertFalse(actual);
   }
 
-  @Test
-  void removeAllMedicalRecordsToRepository() {
-    //Given
-    //When
-    classUnderTest.removeAllMedicalRecords();
-    //Then
-    List<MedicalRecord> actual = classUnderTest.getAllMedicalRecords();
-    assertTrue(actual.isEmpty());
-  }
 }

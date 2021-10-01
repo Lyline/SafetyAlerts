@@ -1,136 +1,157 @@
 package fr.lyline.SafetyAlerts.repository;
 
 import fr.lyline.SafetyAlerts.model.MedicalRecord;
-import org.assertj.core.util.Arrays;
+import fr.lyline.SafetyAlerts.utils.JsonConverter;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-@SpringBootTest
 public class MedicalRecordRepoTest {
-  MedicalRecord medicalRecord = new MedicalRecord();
-  DateTimeFormatter dtf = DateTimeFormat.forPattern("MM/dd/yyyy");
-  private MedicalRecordRepoImpl classUnderTest = new MedicalRecordRepoImpl();
+  private final List<MedicalRecord> medicList = new ArrayList<>();
+  JsonConverter data = mock(JsonConverter.class);
+  private final MedicalRecordRepoImpl classUnderTest = new MedicalRecordRepoImpl(data);
+  String fileJsonPath = "src/main/resources/medicalRecord.json";
+  MedicalRecord medic1 = new MedicalRecord("Homer", "Simpson", new DateTime("1956-05-12"),
+      new String[]{"duff 250cl"}, new String[]{"work"});
+  MedicalRecord medic2 = new MedicalRecord("Marge", "Simpson", new DateTime("1957-03-19"),
+      new String[]{}, new String[]{});
+  MedicalRecord medic3 = new MedicalRecord("Bart", "Simpson", new DateTime("2010-02-23"),
+      new String[]{}, new String[]{"school", "vegetables"});
 
   @BeforeEach
   void setUp() {
-    classUnderTest = new MedicalRecordRepoImpl();
+    medicList.add(medic1);
+    medicList.add(medic2);
+    medicList.add(medic3);
   }
 
   @Test
-  void getAllMedicalRecordsTest() {
+  void whenGetAllMedicalRecordsReturnThreeRecords() {
     //Given
-
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(medicList);
     //When
-    List<MedicalRecord> result = classUnderTest.findAll();
+    List<MedicalRecord> actual = classUnderTest.findAll();
 
     //Then
-    assertEquals(23, result.size());
-    assertEquals("class fr.lyline.SafetyAlerts.model.MedicalRecord", result.get(1).getClass().toString());
+    assertEquals(3, actual.size());
   }
 
   @Test
-  void getMedicalRecordByIdTest() {
+  void whenGetAllMedicalRecordsNoContentReturnAnEmptyList() {
     //Given
-
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(List.of());
     //When
-    MedicalRecord result = classUnderTest.findById("JohnBoyd");
+    List<MedicalRecord> actual = classUnderTest.findAll();
 
     //Then
-    assertEquals("John", result.getFirstName());
-    assertEquals("Boyd", result.getLastName());
-    assertEquals("03/06/1984", result.getBirthdate().toString(dtf));
-    assertArrayEquals(Arrays.array("aznol:350mg", "hydrapermazol:100mg"), result.getMedications());
-    assertArrayEquals(Arrays.array("nillacilan"), result.getAllergies());
+    assertTrue(actual.isEmpty());
   }
 
   @Test
-  void addMedicalRecordTest() {
+  void whenGetValidMedicalRecordByFirstNameAndLastNameReturnThisRecord() {
     //Given
-    medicalRecord.setFirstName("Jean");
-    medicalRecord.setLastName("Bon");
-    medicalRecord.setBirthdate(new DateTime().withDate(2021, 12, 31));
-    medicalRecord.setMedications(new String[]{"new medication", "aspirin"});
-    medicalRecord.setAllergies(new String[]{"coconut"});
-
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(medicList);
     //When
-    classUnderTest.add(medicalRecord);
+    MedicalRecord actual = classUnderTest.findByFirstNameAndLastName("Homer", "Simpson");
 
     //Then
-    MedicalRecord result = classUnderTest.findById("JeanBon");
-    assertEquals("Jean", result.getFirstName());
-    assertEquals("Bon", result.getLastName());
-    assertEquals("12/31/2021", result.getBirthdate().toString(dtf));
-    assertArrayEquals(Arrays.array("new medication", "aspirin"), result.getMedications());
-    assertArrayEquals(Arrays.array("coconut"), result.getAllergies());
+    assertSame(medic1, actual);
   }
 
   @Test
-  void addAllMedicalRecordTest() {
+  void whenGetNotValidMedicalRecordByFirstNameAndLastNameReturnNull() {
     //Given
-    medicalRecord.setFirstName("Marcel");
-    medicalRecord.setLastName("Dugenou");
-
-    MedicalRecord medicalRecord1 = new MedicalRecord();
-    medicalRecord1.setFirstName("Jane");
-    medicalRecord1.setLastName("Doe");
-
-    List<MedicalRecord> list = new ArrayList<>();
-    list.add(medicalRecord);
-    list.add(medicalRecord1);
-
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(medicList);
     //When
-    classUnderTest.addAll(list);
+    MedicalRecord actual = classUnderTest.findByFirstNameAndLastName("John", "Doe");
 
     //Then
-    List<MedicalRecord> result = classUnderTest.findAll();
-    assertTrue(result.contains(medicalRecord));
-    assertTrue(result.contains(medicalRecord1));
+    assertNull(actual);
   }
 
   @Test
-  void upDateMedicalRecordTest() {
+  void whenAddValidMedicalRecordReturnTrue() {
     //Given
-    medicalRecord = classUnderTest.findById("JohnBoyd");
-    medicalRecord.setMedications(new String[]{"reset data"});
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(medicList);
+    MedicalRecord medic = new MedicalRecord("John", "Doe", new DateTime("1956-05-12"),
+        new String[]{""}, new String[]{""});
 
     //When
-    classUnderTest.update("JohnBoyd", medicalRecord);
+    boolean actual = classUnderTest.add(medic);
 
     //Then
-    MedicalRecord result = classUnderTest.findById("JohnBoyd");
-
-    assertEquals("John", result.getFirstName());
-    assertEquals("Boyd", result.getLastName());
-    assertEquals("03/06/1984", result.getBirthdate().toString(dtf));
-    assertArrayEquals(Arrays.array("reset data"), result.getMedications());
+    assertTrue(actual);
   }
 
   @Test
-  void deleteMedicalRecordTest() {
+  void whenAddExistingMedicalRecordReturnFalse() {
     //Given
-
+    MedicalRecord medic = new MedicalRecord();
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(medicList);
+    //when(classUnderTest.findMedic(medic)).thenReturn(null);
     //When
-    classUnderTest.deleteById("JohnBoyd");
+    boolean actual = classUnderTest.add(medic1);
+
     //Then
-    assertEquals(null, classUnderTest.findById("JohnBoyd"));
+    assertFalse(actual);
   }
 
   @Test
-  void deleteAllMedicalRecordTest() {
+  void whenUpdateValidMedicalRecordReturnTrue() {
     //Given
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(medicList);
+    MedicalRecord medicToUpdate = new MedicalRecord("Homer", "Simpson", new DateTime("1956-05-12"),
+        new String[]{"coca 3ml"}, new String[]{"bees"});
 
     //When
-    classUnderTest.deleteAll();
+    boolean actual = classUnderTest.update(medicToUpdate);
+
     //Then
-    assertTrue(classUnderTest.findAll().isEmpty());
+    assertTrue(actual);
+  }
+
+  @Test
+  void whenUpdateNotValidMedicalRecordReturnFalse() {
+    //Given
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(medicList);
+    MedicalRecord medicToUpdate = new MedicalRecord("John", "Doe", new DateTime("1956-05-12"),
+        new String[]{}, new String[]{});
+
+    //When
+    boolean actual = classUnderTest.update(medicToUpdate);
+
+    //Then
+    assertFalse(actual);
+  }
+
+  @Test
+  void whenDeleteExistingMedicalRecordReturnTrue() {
+    //Given
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(medicList);
+
+    //When
+    boolean actual = classUnderTest.deleteByFirstNameAndLastName("Homer", "Simpson");
+
+    //Then
+    assertTrue(actual);
+  }
+
+  @Test
+  void whenDeleteNotExistingMedicalRecordReturnFalse() {
+    //Given
+    when(data.convertJsonToObject(fileJsonPath)).thenReturn(medicList);
+
+    //When
+    boolean actual = classUnderTest.deleteByFirstNameAndLastName("John", "Doe");
+
+    //Then
+    assertFalse(actual);
   }
 }
