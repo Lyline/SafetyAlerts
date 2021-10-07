@@ -45,7 +45,8 @@ public class FireStationServiceImpl implements FireStationService {
 
   @Override
   public boolean addFireStation(FireStation fireStation) {
-    if (fireStation.getStation() != 0 && fireStation.getAddress() != null) {
+    if ((fireStation.getStation() != 0 | fireStation.getStation() == null) &&
+        (fireStation.getAddress() != null | fireStation.getAddress().isEmpty())) {
       boolean result = repository.add(fireStation);
       return result;
     } else return false;
