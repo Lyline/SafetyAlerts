@@ -38,4 +38,14 @@ public class ChildAlert {
     }
     result.put(childId, parents);
   }
+
+  @Override
+  public String toString() {
+    return "ChildAlert{" +
+        "childFirstName='" + childFirstName + '\'' +
+        ", childLastName='" + childLastName + '\'' +
+        ", age='" + age + '\'' +
+        ", parents=" + parents +
+        '}';
+  }
 }

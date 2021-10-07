@@ -2,9 +2,15 @@ package fr.lyline.SafetyAlerts.ObjectMapper;
 
 import fr.lyline.SafetyAlerts.model.MedicalRecord;
 import fr.lyline.SafetyAlerts.model.Person;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.joda.time.DateTime;
 import org.joda.time.Years;
 
+import java.util.Arrays;
+
+@Getter
+@AllArgsConstructor
 public class PersonInfo {
   String firstName;
   String lastName;
@@ -27,17 +33,6 @@ public class PersonInfo {
     this.allergies = allergies;
   }
 
-  public PersonInfo(String firstName, String lastName, String phone, String email, int age, String[] medications,
-                    String[] allergies) {
-    this.firstName = firstName;
-    this.lastName = lastName;
-    this.phone = phone;
-    this.email = email;
-    this.age = age;
-    this.medications = medications;
-    this.allergies = allergies;
-  }
-
   public PersonInfo add(Person person, MedicalRecord medic) {
     int age = Years.yearsBetween(medic.getBirthdate(), DateTime.now()).getYears();
 
@@ -45,32 +40,16 @@ public class PersonInfo {
         medic.getMedications(), medic.getAllergies());
   }
 
-  public String getFirstName() {
-    return firstName;
+  @Override
+  public String toString() {
+    return "PersonInfo{" +
+        "firstName='" + firstName + '\'' +
+        ", lastName='" + lastName + '\'' +
+        ", phone='" + phone + '\'' +
+        ", email='" + email + '\'' +
+        ", age=" + age +
+        ", medications=" + Arrays.toString(medications) +
+        ", allergies=" + Arrays.toString(allergies) +
+        '}';
   }
-
-  public String getLastName() {
-    return lastName;
-  }
-
-  public String getPhone() {
-    return phone;
-  }
-
-  public int getAge() {
-    return age;
-  }
-
-  public String[] getMedications() {
-    return medications;
-  }
-
-  public String[] getAllergies() {
-    return allergies;
-  }
-
-  public String getEmail() {
-    return email;
-  }
-
 }
