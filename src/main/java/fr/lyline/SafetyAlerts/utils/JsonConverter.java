@@ -1,10 +1,11 @@
 package fr.lyline.SafetyAlerts.utils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.lyline.SafetyAlerts.model.FireStation;
 import fr.lyline.SafetyAlerts.model.MedicalRecord;
 import fr.lyline.SafetyAlerts.model.Person;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -16,6 +17,8 @@ import java.util.List;
 
 @Component
 public class JsonConverter<T> {
+  Logger logger = LogManager.getLogger(JsonConverter.class);
+
   public JsonConverter() {
   }
 
@@ -31,6 +34,7 @@ public class JsonConverter<T> {
     try {
       if (inputFilePath.contains("person")) {
         Person[] value = mapper.readValue(data, Person[].class);
+
         for (Person person : value) {
           list.add((T) person);
         }
@@ -45,8 +49,10 @@ public class JsonConverter<T> {
           list.add((T) medicalRecord);
         }
       }
-    } catch (JsonProcessingException e) {
-      e.printStackTrace();
+    } catch (Exception e) {
+      logger.error(e.getMessage());
+      logger.debug("test" + e.fillInStackTrace());
+      logger.trace(e);
     }
     return (T) list;
   }
@@ -69,7 +75,7 @@ public class JsonConverter<T> {
       data = new String(Files.readAllBytes(Paths.get(filePath)));
 
     } catch (IOException e) {
-      e.printStackTrace();
+      logger.error("File cannot read or not exist - " + e.getMessage());
     }
     return data;
   }
