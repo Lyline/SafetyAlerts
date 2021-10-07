@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.joda.time.DateTime;
 
+import java.util.Arrays;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -22,5 +24,16 @@ public class MedicalRecord {
   private String[] allergies;
 
   public MedicalRecord() {
+  }
+
+  @Override
+  public String toString() {
+    return "MedicalRecord{" +
+        "firstName='" + firstName + '\'' +
+        ", lastName='" + lastName + '\'' +
+        ", birthdate=" + birthdate +
+        ", medications=" + Arrays.toString(medications) +
+        ", allergies=" + Arrays.toString(allergies) +
+        '}';
   }
 }
