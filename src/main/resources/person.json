@@ -4,7 +4,7 @@
     "lastName": "Boyd",
     "address": "1509 Culver St",
     "city": "Culver",
-    "zip": "97451",
+    "zip": 97451,
     "phone": "841-874-6512",
     "email": "jaboyd@email.com"
   },
@@ -13,7 +13,7 @@
     "lastName": "Boyd",
     "address": "1509 Culver St",
     "city": "Culver",
-    "zip": "97451",
+    "zip": 97451,
     "phone": "841-874-6513",
     "email": "drk@email.com"
   },
@@ -22,7 +22,7 @@
     "lastName": "Boyd",
     "address": "1509 Culver St",
     "city": "Culver",
-    "zip": "97451",
+    "zip": 97451,
     "phone": "841-874-6512",
     "email": "tenz@email.com"
   },
@@ -31,7 +31,7 @@
     "lastName": "Boyd",
     "address": "1509 Culver St",
     "city": "Culver",
-    "zip": "97451",
+    "zip": 97451,
     "phone": "841-874-6512",
     "email": "jaboyd@email.com"
   },
@@ -40,7 +40,7 @@
     "lastName": "Boyd",
     "address": "1509 Culver St",
     "city": "Culver",
-    "zip": "97451",
+    "zip": 97451,
     "phone": "841-874-6544",
     "email": "jaboyd@email.com"
   },
@@ -49,7 +49,7 @@
     "lastName": "Marrack",
     "address": "29 15th St",
     "city": "Culver",
-    "zip": "97451",
+    "zip": 97451,
     "phone": "841-874-6513",
     "email": "drk@email.com"
   },
@@ -58,7 +58,7 @@
     "lastName": "Carman",
     "address": "834 Binoc Ave",
     "city": "Culver",
-    "zip": "97451",
+    "zip": 97451,
     "phone": "841-874-6512",
     "email": "tenz@email.com"
   },
@@ -67,7 +67,7 @@
     "lastName": "Duncan",
     "address": "644 Gershwin Cir",
     "city": "Culver",
-    "zip": "97451",
+    "zip": 97451,
     "phone": "841-874-6512",
     "email": "jaboyd@email.com"
   },
@@ -76,7 +76,7 @@
     "lastName": "Shepard",
     "address": "748 Townings Dr",
     "city": "Culver",
-    "zip": "97451",
+    "zip": 97451,
     "phone": "841-874-6544",
     "email": "jaboyd@email.com"
   },
@@ -85,7 +85,7 @@
     "lastName": "Cooper",
     "address": "112 Steppes Pl",
     "city": "Culver",
-    "zip": "97451",
+    "zip": 97451,
     "phone": "841-874-6874",
     "email": "tcoop@ymail.com"
   },
@@ -94,7 +94,7 @@
     "lastName": "Cooper",
     "address": "489 Manchester St",
     "city": "Culver",
-    "zip": "97451",
+    "zip": 97451,
     "phone": "841-874-9845",
     "email": "lily@email.com"
   },
@@ -103,7 +103,7 @@
     "lastName": "Zemicks",
     "address": "892 Downing Ct",
     "city": "Culver",
-    "zip": "97451",
+    "zip": 97451,
     "phone": "841-874-7878",
     "email": "soph@email.com"
   },
@@ -112,7 +112,7 @@
     "lastName": "Zemicks",
     "address": "892 Downing Ct",
     "city": "Culver",
-    "zip": "97451",
+    "zip": 97451,
     "phone": "841-874-7512",
     "email": "ward@email.com"
   },
@@ -121,7 +121,7 @@
     "lastName": "Zemicks",
     "address": "892 Downing Ct",
     "city": "Culver",
-    "zip": "97451",
+    "zip": 97451,
     "phone": "841-874-7512",
     "email": "zarc@email.com"
   },
@@ -130,7 +130,7 @@
     "lastName": "Walker",
     "address": "908 73rd St",
     "city": "Culver",
-    "zip": "97451",
+    "zip": 97451,
     "phone": "841-874-8547",
     "email": "reg@email.com"
   },
@@ -139,7 +139,7 @@
     "lastName": "Peters",
     "address": "908 73rd St",
     "city": "Culver",
-    "zip": "97451",
+    "zip": 97451,
     "phone": "841-874-7462",
     "email": "jpeter@email.com"
   },
@@ -148,7 +148,7 @@
     "lastName": "Peters",
     "address": "112 Steppes Pl",
     "city": "Culver",
-    "zip": "97451",
+    "zip": 97451,
     "phone": "841-874-8888",
     "email": "jpeter@email.com"
   },
@@ -157,7 +157,7 @@
     "lastName": "Boyd",
     "address": "112 Steppes Pl",
     "city": "Culver",
-    "zip": "97451",
+    "zip": 97451,
     "phone": "841-874-9888",
     "email": "aly@imail.com"
   },
@@ -166,7 +166,7 @@
     "lastName": "Stelzer",
     "address": "947 E. Rose Dr",
     "city": "Culver",
-    "zip": "97451",
+    "zip": 97451,
     "phone": "841-874-7784",
     "email": "bstel@email.com"
   },
@@ -175,7 +175,7 @@
     "lastName": "Stelzer",
     "address": "947 E. Rose Dr",
     "city": "Culver",
-    "zip": "97451",
+    "zip": 97451,
     "phone": "841-874-7784",
     "email": "ssanw@email.com"
   },
@@ -184,7 +184,7 @@
     "lastName": "Stelzer",
     "address": "947 E. Rose Dr",
     "city": "Culver",
-    "zip": "97451",
+    "zip": 97451,
     "phone": "841-874-7784",
     "email": "bstel@email.com"
   },
@@ -193,7 +193,7 @@
     "lastName": "Ferguson",
     "address": "748 Townings Dr",
     "city": "Culver",
-    "zip": "97451",
+    "zip": 97451,
     "phone": "841-874-6741",
     "email": "clivfd@ymail.com"
   },
@@ -202,7 +202,7 @@
     "lastName": "Cadigan",
     "address": "951 LoneTree Rd",
     "city": "Culver",
-    "zip": "97451",
+    "zip": 97451,
     "phone": "841-874-7458",
     "email": "gramps@email.com"
   }

@@ -64,7 +64,7 @@ class MainFunctionsAPIControllerTest {
         .andReturn();
 
     //Then
-    assertEquals("", result.getResponse().getContentAsString());
+    assertEquals("[]", result.getResponse().getContentAsString());
   }
 
   @Test
@@ -98,7 +98,7 @@ class MainFunctionsAPIControllerTest {
         .andReturn();
 
     //Then
-    assertEquals("", result.getResponse().getContentAsString());
+    assertEquals("[]", result.getResponse().getContentAsString());
   }
 
   @Test
@@ -255,7 +255,7 @@ class MainFunctionsAPIControllerTest {
         .andExpect(status().isNoContent())
         .andReturn();
     //Then
-    assertEquals("", result.getResponse().getContentAsString());
+    assertEquals("{}", result.getResponse().getContentAsString());
   }
 
   @Test
@@ -344,7 +344,7 @@ class MainFunctionsAPIControllerTest {
         .andReturn();
 
     //Then
-    assertEquals("", result.getResponse().getContentAsString());
+    assertEquals("{}", result.getResponse().getContentAsString());
   }
 
   @Test
