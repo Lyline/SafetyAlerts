@@ -13,4 +13,12 @@ public class FireStation {
 
   public FireStation() {
   }
+
+  @Override
+  public String toString() {
+    return "FireStation{" +
+        "station=" + station +
+        ", address='" + address + '\'' +
+        '}';
+  }
 }
