@@ -117,9 +117,6 @@ class MedicalRecordControllerTest {
   @Test
   void whenAddNewMedicalRecordReturnStatus201() throws Exception {
     //Given
-    MedicalRecord medic = new MedicalRecord("John", "Doe", new DateTime("1956-05-12"),
-        new String[]{}, new String[]{});
-
     given((service.getMedicalRecordByFirstNameAndLastName("John", "Doe"))).willReturn(null);
 
     //When
@@ -134,7 +131,11 @@ class MedicalRecordControllerTest {
         .andReturn();
 
     //Then
-    assertEquals("", result.getResponse().getContentAsString());
+    assertEquals("{\"firstName\":\"John\"," +
+        "\"lastName\":\"Doe\"," +
+        "\"birthdate\":\"12/05/1956\"," +
+        "\"medications\":[]," +
+        "\"allergies\":[]}", result.getResponse().getContentAsString());
   }
 
   @Test
@@ -178,7 +179,11 @@ class MedicalRecordControllerTest {
         .andExpect(status().isOk())
         .andReturn();
     //Then
-    assertEquals("", result.getResponse().getContentAsString());
+    assertEquals("{\"firstName\":\"Homer\"," +
+        "\"lastName\":\"Simpson\"," +
+        "\"birthdate\":\"12/05/1956\"," +
+        "\"medications\":[]," +
+        "\"allergies\":[]}", result.getResponse().getContentAsString());
   }
 
   @Test
@@ -216,7 +221,11 @@ class MedicalRecordControllerTest {
         .andExpect(status().isOk())
         .andReturn();
     //Then
-    assertEquals("", result.getResponse().getContentAsString());
+    assertEquals("{\"firstName\":\"Homer\"," +
+        "\"lastName\":\"Simpson\"," +
+        "\"birthdate\":\"05/12/1956\"," +
+        "\"medications\":[\"duff 250cl\"]," +
+        "\"allergies\":[\"work\"]}", result.getResponse().getContentAsString());
   }
 
   @Test
