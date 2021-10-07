@@ -29,6 +29,12 @@ public class PersonServiceImpl implements PersonService {
 
   @Override
   public boolean addPerson(Person person) {
+    if (person.getFirstName() == null | person.getLastName() == null |
+        person.getAddress() == null | person.getCity() == null | person.getZip() == 0 |
+        person.getPhone() == null | person.getEmail() == null) {
+      return false;
+    }
+
     if (!person.getFirstName().isEmpty() && !person.getLastName().isEmpty() &&
         !person.getAddress().isEmpty() && !person.getCity().isEmpty() &&
         person.getZip() != 0 && !person.getPhone().isEmpty()) {
