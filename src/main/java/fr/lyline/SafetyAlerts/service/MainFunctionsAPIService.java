@@ -68,6 +68,10 @@ public class MainFunctionsAPIService {
     Person personData = personRepo.findById(firstName, lastName);
     MedicalRecord medicalRecordData = medicalRecordRepo.findByFirstNameAndLastName(firstName, lastName);
 
+    if (personData == null) {
+      return null;
+    }
+
     if (personData.getFirstName() != null && medicalRecordData.getFirstName() != null) {
       int age = Years.yearsBetween(medicalRecordData.getBirthdate(), DateTime.now()).getYears();
 
