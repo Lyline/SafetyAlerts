@@ -18,4 +18,17 @@ public class Person {
 
   public Person() {
   }
+
+  @Override
+  public String toString() {
+    return "Person{" +
+        "firstName='" + firstName + '\'' +
+        ", lastName='" + lastName + '\'' +
+        ", address='" + address + '\'' +
+        ", city='" + city + '\'' +
+        ", zip=" + zip +
+        ", phone='" + phone + '\'' +
+        ", email='" + email + '\'' +
+        "}";
+  }
 }
