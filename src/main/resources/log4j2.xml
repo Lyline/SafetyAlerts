@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="DEBUG">
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout disableAnsi="false"
+                     pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{2}.%M() - %msg%n}{ERROR=red bold, WARN=yellow blink, INFO=magenta, DEBUG=blue bold, TRACE=green}"/>
+    </Console>
+    <File name="File" fileName="app.log">
+      <PatternLayout
+          pattern="%highlight{%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %logger{2} line%L- %msg%n}{STYLE=Logback}"/>
+    </File>
+  </Appenders>
+  
+  <Loggers>
+    <Root level="INFO">
+      <AppenderRef ref="Console"/>
+      <AppenderRef ref="File"/>
+    </Root>
+  </Loggers>
+</Configuration>
