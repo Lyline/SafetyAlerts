@@ -66,7 +66,7 @@ public class FireStationControllerTest {
         .andReturn();
 
     //Then
-    assertEquals("", result.getResponse().getContentAsString());
+    assertEquals("[]", result.getResponse().getContentAsString());
   }
 
   @Test
@@ -117,7 +117,7 @@ public class FireStationControllerTest {
         .andReturn();
 
     //Then
-    assertEquals("", result.getResponse().getContentAsString());
+    assertEquals("{\"station\":5,\"address\":\"NoWhere\"}", result.getResponse().getContentAsString());
   }
 
   @Test
