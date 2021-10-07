@@ -78,7 +78,7 @@ public class PersonControllerTest {
         .andReturn();
 
     //Then
-    assertEquals("", result.getResponse().getContentAsString());
+    assertEquals("[]", result.getResponse().getContentAsString());
   }
 
   @Test
@@ -188,7 +188,13 @@ public class PersonControllerTest {
         .andExpect(status().isOk())
         .andReturn();
     //Then
-    assertEquals("", result.getResponse().getContentAsString());
+    assertEquals("{\"firstName\":\"Homer\"," +
+        "\"lastName\":\"Simpson\"," +
+        "\"address\":\"NoWhere\"," +
+        "\"city\":\"Sin City\"," +
+        "\"zip\":80085," +
+        "\"phone\":\"123-456\"," +
+        "\"email\":\"homer@test.com\"}", result.getResponse().getContentAsString());
   }
 
   @Test
@@ -228,7 +234,14 @@ public class PersonControllerTest {
         .andReturn();
 
     //Then
-    assertEquals("", result.getResponse().getContentAsString());
+    assertEquals("{\"firstName\":\"Homer\"," +
+        "\"lastName\":\"Simpson\"," +
+        "\"address\":\"742 Evergreen Terrace\"," +
+        "\"city\":\"Springfield\"," +
+        "\"zip\":80085," +
+        "\"phone\":" +
+        "\"123-456\"," +
+        "\"email\":\"homer@test.com\"}", result.getResponse().getContentAsString());
   }
 
   @Test
