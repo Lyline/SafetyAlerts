@@ -11,16 +11,39 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ The fire station controller of the CRUD application.
+
+ @author Quesne GC
+ @see fr.lyline.SafetyAlerts.service.FireStationService
+ @since 0.1 */
 @RestController
 public class FireStationController {
 
+  /**
+   The fire station service.
+
+   @see fr.lyline.SafetyAlerts.service.FireStationService
+   */
   @Autowired
   FireStationService service;
 
+  /**
+   The Logger.
+
+   @see org.apache.logging.log4j.LogManager;
+   @see org.apache.logging.log4j.Logger;
+   */
   Logger logger = LogManager.getLogger(FireStationController.class);
 
+  /**
+   Gets all fire stations when the service return a list of fire station numbers. It return a list of fire station numbers
+   and a HttpStatus 200, else return an empty list and a HttpStatus 404.
+
+   @return the list of fire station numbers
+   */
   @GetMapping("/firestations")
-  public ResponseEntity<List<Integer>> getFireStations() {
+  public ResponseEntity<List<Integer>> getAllFireStations() {
     List<Integer> response = service.getAllFireStations();
 
     if (!response.isEmpty()) {
@@ -34,6 +57,14 @@ public class FireStationController {
     }
   }
 
+  /**
+   Gets the fire station deserved when the address entered in parameter. If the service return a result then it
+   returns a fire station number and a HttpStatus 200, else an empty list and a HttpStatus 404.
+
+   @param address the address
+
+   @return the deserved fire station number
+   */
   @GetMapping("/firestations/{address}")
   public ResponseEntity<List<Integer>> getFireStation(@PathVariable(value = "address") String address) {
     List<Integer> response = service.getFireStation(address);
@@ -49,6 +80,15 @@ public class FireStationController {
     }
   }
 
+  /**
+   Add a new fire station when a fire station object entered in parameter. If the service return true then it return the
+   added fire stattion and a HttpStatus 201, else if the service return an uncompleted object then it return a HttpStatus
+   404, or if the fire station already exist then it return null and a HttpStatus 409.
+
+   @param fireStation the fire station
+
+   @return the response entity
+   */
   @PostMapping("/firestations")
   public ResponseEntity addFireStation(@RequestBody FireStation fireStation) {
     List<Integer> response = service.getFireStation(fireStation.getAddress());
@@ -71,6 +111,17 @@ public class FireStationController {
     }
   }
 
+  /**
+   Update a fire station when the station number, the intervention address of the fire station to update entered in parameters
+   and the fire station object entered in request body. If the service return true then it returns the updated fire station
+   and a HttpStatus 200, else it returns null and a HttpStatus 404.
+
+   @param fireStation the new update fire station
+   @param oldFS       the fire station number to update
+   @param address     the intervention address to update
+
+   @return the response entity
+   */
   @PatchMapping("/firestations/{oldFS}-{address}")
   public ResponseEntity<FireStation> upDateFireStation(@RequestBody FireStation fireStation,
                                                        @PathVariable(value = "oldFS") Integer oldFS,
@@ -88,6 +139,15 @@ public class FireStationController {
     }
   }
 
+  /**
+   Delete a fire station when the fire station number and the intervention address entered in parameters. If the service
+   return true then it returns a HttpStatus 200, else return a HttpStatus 404.
+
+   @param stationNumber the station number
+   @param address       the address
+
+   @return the response entity
+   */
   @DeleteMapping("/firestations/{stationNumber}-{address}")
   public ResponseEntity<List<Integer>> deleteFireStation(@PathVariable() String stationNumber,
                                                          @PathVariable() String address) {

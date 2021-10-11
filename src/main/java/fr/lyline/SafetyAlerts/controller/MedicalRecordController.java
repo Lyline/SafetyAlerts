@@ -11,13 +11,35 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ The Medical record controller of the CRUD application.
+
+ @author Quesne GC
+ @see fr.lyline.SafetyAlerts.service.MedicalRecordService
+ @since 0.1 */
 @RestController
 public class MedicalRecordController {
+  /**
+   The Medical record Service.
+
+   @see fr.lyline.SafetyAlerts.service.MedicalRecordService
+   */
   @Autowired
   MedicalRecordService service;
 
+  /**
+   The Logger.
+
+   @see org.apache.logging.log4j.LogManager;
+   @see org.apache.logging.log4j.Logger;
+   */
   Logger logger = LogManager.getLogger(MedicalRecordController.class);
 
+  /**
+   Gets all medical records and a HttpStatus 200 when the service return result, else it return null and a HttpStatus 404.
+
+   @return the all medical records
+   */
   @GetMapping("/medicalrecords")
   public ResponseEntity<List<MedicalRecord>> getAllMedicalRecords() {
     List<MedicalRecord> response = service.getAllMedicalRecords();
@@ -33,6 +55,15 @@ public class MedicalRecordController {
     }
   }
 
+  /**
+   Gets the medical record of this person when the first name and the last name entered in parameters. It returns this
+   medical record and a HttpStatus 200 if this person exist, else it returns null and a HttpStatus 404.
+
+   @param firstName the first name of this person
+   @param lastName  the last name of this person
+
+   @return the medical record
+   */
   @GetMapping("/medicalrecords/{firstName}_{lastName}")
   public ResponseEntity<MedicalRecord> getMedicalRecord(@PathVariable(value = "firstName") String firstName,
                                                         @PathVariable(value = "lastName") String lastName) {
@@ -48,6 +79,15 @@ public class MedicalRecordController {
     }
   }
 
+  /**
+   Add a new medical record when the medical record entered in parameter. If the medical record is completed, it return
+   the medical record and a HttpSatus 200, else if the medical record is uncompleted then it return null and a HttpStatus
+   404, or if the medical record already exist then it returns null and a HttpStatut 409.
+
+   @param medicalRecord the medical record
+
+   @return the added medical record
+   */
   @PostMapping("/medicalrecords")
   public ResponseEntity<MedicalRecord> addMedicalRecord(@RequestBody MedicalRecord medicalRecord) {
     MedicalRecord medicalRecordIsExist =
@@ -75,6 +115,17 @@ public class MedicalRecordController {
     }
   }
 
+  /**
+   Update a medical record when the first name, the last name of this person and the medical record to update entered in
+   parameters. If the medical record exist then it returns the updated medical record and a HttpStatus 200, else it returns
+   null and a HttpStatus 304
+
+   @param firstName             the first name
+   @param lastName              the last name
+   @param medicalRecordToUpdate the medical record to update
+
+   @return the response entity
+   */
   @PatchMapping("/medicalrecords/{firstName}_{lastName}")
   public ResponseEntity<MedicalRecord> upDateMedicalRecord(@PathVariable(value = "firstName") String firstName,
                                                            @PathVariable(value = "lastName") String lastName,
@@ -87,12 +138,21 @@ public class MedicalRecordController {
       logger.info("Exist : " + medicalRecordIsExist + "\nUpdate : " + medicalRecordToUpdate);
       return new ResponseEntity<>(medicalRecordToUpdate, HttpStatus.OK);
     } else {
-      logger.warn("PATCH /medicalrecords/" + firstName + "_" + lastName + " - Medical record not exist - Status 404");
+      logger.warn("PATCH /medicalrecords/" + firstName + "_" + lastName + " - Medical record not exist - Status 304");
       logger.info("null");
       return new ResponseEntity<>(null, HttpStatus.NOT_MODIFIED);
     }
   }
 
+  /**
+   Delete a medical record when the first name and the last name of this person entered in parameters. If this medical record
+   exist then it returns the deleted medical record and a HttpStatus 200, else it returns null and a HttpStatus 404.
+
+   @param firstName the first name of the medical record to delete
+   @param lastName  the last name of the medical record to delete
+
+   @return the deleted medical record
+   */
   @DeleteMapping("/medicalrecords/{firstName}_{lastName}")
   public ResponseEntity deleteMedicalRecord(@PathVariable(value = "firstName") String firstName,
                                             @PathVariable(value = "lastName") String lastName) {

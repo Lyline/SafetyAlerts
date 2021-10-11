@@ -17,13 +17,40 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ The controller of Main functions api controller.
+
+ @author Quesne GC
+ @see fr.lyline.SafetyAlerts.service.MainFunctionsAPIService
+ @since 0.1 */
 @RestController
 public class MainFunctionsAPIController {
+  /**
+   The Service.
+
+   @see fr.lyline.SafetyAlerts.service.MainFunctionsAPIService
+   */
   @Autowired
   MainFunctionsAPIService service;
 
+  /**
+   The Logger.
+
+   @see org.apache.logging.log4j.LogManager;
+   @see org.apache.logging.log4j.Logger;
+   */
   Logger logger = LogManager.getLogger(MainFunctionsAPIController.class);
 
+  /**
+   Gets the list of community email when its entered the city in parameter. Its return a list of email and a HttpStatus 200
+   when the service return a set list, else return an empty list and a HttpStatus 404.
+
+   @param city the city
+
+   @return the list of community email
+
+   @see fr.lyline.SafetyAlerts.service.MainFunctionsAPIService
+   */
   @GetMapping("/communityEmail")
   public ResponseEntity<Set<String>> getCommunityEmail(@RequestParam() String city) {
     Set<String> response = service.getCommunityEmail(city);
@@ -39,6 +66,15 @@ public class MainFunctionsAPIController {
     }
   }
 
+  /**
+   Gets a list of phone numbers served by fire station when its entered the fire station number in parameter. Its return a
+   list of phone number and a HttpStatus 200 when the service return a list of phone numbers, else return an empty list
+   and a HttpStatus 404.
+
+   @param fireStation_number the fire station number
+
+   @return the list of phone numbers
+   */
   @GetMapping("/phoneAlert")
   public ResponseEntity<Set<String>> getPhoneAlert(@RequestParam(value = "firestation") Integer fireStation_number) {
     Set<String> response = service.getPhoneForAlert(fireStation_number);
@@ -54,6 +90,18 @@ public class MainFunctionsAPIController {
     }
   }
 
+  /**
+   Gets the person information when its entered the first name and the last name in parameter. Its return this person
+   information of this person and a HttpStatus 200 when the service return this person information, else its return null
+   and a HttpStatus 404.
+
+   @param firstName the first name
+   @param lastName  the last name
+
+   @return the person info
+
+   @see fr.lyline.SafetyAlerts.service.MainFunctionsAPIService
+   */
   @GetMapping("/personInfo")
   public ResponseEntity<PersonInfo> getPersonInfo(@RequestParam() String firstName,
                                                   @RequestParam() String lastName) {
@@ -70,6 +118,16 @@ public class MainFunctionsAPIController {
     }
   }
 
+  /**
+   Gets the list of children with their parents when its entered an address in parameter. Its return a list of ChildAlert
+   and a HttpStatus 200 when the service return this list, else its return null and a HttpStatus 204.
+
+   @param address the address
+
+   @return the list of ChildAlert
+
+   @see fr.lyline.SafetyAlerts.service.MainFunctionsAPIService
+   */
   @GetMapping("/childAlert")
   public ResponseEntity<List<ChildAlert>> getChildAlert(@RequestParam() String address) {
     List<ChildAlert> response = service.getChildAlert(address);
@@ -85,6 +143,17 @@ public class MainFunctionsAPIController {
     }
   }
 
+  /**
+   Gets a list of persons information sorted by fire stations when an array of fire station number entered in parameter.
+   Its return a list of person information (identification and medical) sorted by fire station and a HttpStatus 200 when the
+   service return this result, else its return an empty list and a HttpStatus 204.
+
+   @param stationList the array of fire station number
+
+   @return the list of person sorted by fire station
+
+   @see fr.lyline.SafetyAlerts.service.MainFunctionsAPIService
+   */
   @GetMapping("/flood/stations")
   public ResponseEntity<Map<Integer, List<Map<String, List<PersonInfo>>>>> getFloodStation(
       @RequestParam(value = "stations") int[] stationList) {
@@ -101,6 +170,17 @@ public class MainFunctionsAPIController {
     }
   }
 
+  /**
+   Gets the list of person information with the sum of adults and children when the fire station number entered in
+   parameter. Its return a list of person information and the sum of adults and children and a HttpStatus 200 when the
+   service return its result, else its return an empty list and a HttpStatus 204.
+
+   @param stationNumber the station number
+
+   @return the list of person information and the sum of adults and children
+
+   @see fr.lyline.SafetyAlerts.service.MainFunctionsAPIService
+   */
   @GetMapping("/firestation")
   public ResponseEntity<Map<String, List<Map<String, String>>>> getPersonsInfoByStation(
       @RequestParam() int stationNumber) {
@@ -117,6 +197,14 @@ public class MainFunctionsAPIController {
     }
   }
 
+  /**
+   Gets a list of persons with all information when an address entered in parameter. Its return a map of person
+   information and a HttpStatus 200 when the service return its result, els its return an empty map and a HttpStatus 204
+
+   @param address the address
+
+   @return the map of person information leave to this address
+   */
   @GetMapping("/fire")
   public ResponseEntity<Map<String, List<Object>>> getPersonsInfoByAddress(
       @RequestParam() String address) {

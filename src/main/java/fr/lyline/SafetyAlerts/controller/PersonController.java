@@ -11,16 +11,42 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ The Person controller of the CRUD application.
+
+ @author Quesne GC
+ @see fr.lyline.SafetyAlerts.service.PersonService
+ @since 0.1 */
 @RestController
 public class PersonController {
 
+  /**
+   The interface of peron service.
+
+   @see fr.lyline.SafetyAlerts.service.PersonService
+   */
   @Autowired
   PersonService service;
 
+  /**
+   The Logger.
+
+   @see org.apache.logging.log4j.LogManager;
+   @see org.apache.logging.log4j.Logger;
+   */
   Logger logger = LogManager.getLogger(PersonController.class);
 
+  /**
+   Gets a list of persons identity and a HttpStatus 200 when the person service return its response, else its return an
+   empty list
+   and a HttpStatus 404.
+
+   @return the list of persons
+
+   @see fr.lyline.SafetyAlerts.service.PersonService
+   */
   @GetMapping("/persons")
-  public ResponseEntity<List<Person>> getPersons() {
+  public ResponseEntity<List<Person>> getAllPersons() {
     List<Person> persons = service.getAllPersons();
 
     if (!persons.isEmpty()) {
@@ -34,6 +60,15 @@ public class PersonController {
     }
   }
 
+  /**
+   Gets a person identity when the first name and the last name entered in parameter. The person
+   service return its response and a HttpStatut 200, else its return an empty list and a HttpStatus 404.
+
+   @param firstName the first name of this person
+   @param lastName  the last name of this person
+
+   @return Person object
+   */
   @GetMapping("/persons/{firstName}_{lastName}")
   public ResponseEntity<Person> getPerson(@PathVariable() String firstName,
                                           @PathVariable() String lastName) {
@@ -50,6 +85,15 @@ public class PersonController {
     }
   }
 
+  /**
+   Add a new person when the request body of Person entered in parameter. Its return a Person object and a HttpStatus 201
+   if the service gets true, else if its return an uncompleted Person object then this method return null and a HttpStatus
+   404, or else this person already exist then this method return null and a HttpStatus 409.
+
+   @param person the person
+
+   @return the added person
+   */
   @PostMapping("/persons")
   public ResponseEntity<Person> addPerson(@RequestBody Person person) {
     Person personIsPresent = service.getPerson(person.getFirstName(), person.getLastName());
@@ -74,6 +118,16 @@ public class PersonController {
     }
   }
 
+  /**
+   Update person entity when the first name and the last name entered in parameters. Its return the updated person and a
+   HttpStatus 200 if the service return this person is found, else its return the person not updated and a HttpStatus 404.
+
+   @param firstName      the first name of searched person
+   @param lastName       the last name of searched person
+   @param personToUpDate the person to update
+
+   @return the person updated
+   */
   @PatchMapping("/persons/{firstName}_{lastName}")
   public ResponseEntity<Person> updatePerson(@PathVariable(value = "firstName") String firstName,
                                              @PathVariable(value = "lastName") String lastName,
@@ -92,6 +146,15 @@ public class PersonController {
     }
   }
 
+  /**
+   Delete a person when the first name and the last name of this person entered in parameters. If the service found this
+   person then its return th removed person and HttpStatus 200, else its return null and a HttpStatus 404.
+
+   @param firstName the first name of the person to delete
+   @param lastName  the last name of the person to delete
+
+   @return the person deleted
+   */
   @DeleteMapping("/persons/{firstName}_{lastName}")
   public ResponseEntity deletePerson(@PathVariable(value = "firstName") String firstName,
                                      @PathVariable(value = "lastName") String lastName) {
