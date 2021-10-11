@@ -138,7 +138,7 @@ public class MainFunctionsAPIService {
 
           if (person.getAddress().equals(address)) {
             MedicalRecord medic = medicalRecordRepo.findByFirstNameAndLastName(person.getFirstName(), person.getLastName());
-            PersonInfo personInfo = new PersonInfo().add(person, medic);
+            PersonInfo personInfo = new PersonInfo().create(person, medic);
             residents.add(personInfo);
           }
         }

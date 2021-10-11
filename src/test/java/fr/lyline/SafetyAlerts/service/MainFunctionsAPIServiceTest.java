@@ -170,7 +170,7 @@ class MainFunctionsAPIServiceTest {
     when(fireStationRepo.findAll()).thenReturn(fireStations);
     when(medicalRecordRepo.findByFirstNameAndLastName("Homer", "Simpson")).thenReturn(medic);
 
-    when(personInfo.add(person, medic)).thenReturn(personInfoMock);
+    when(personInfo.create(person, medic)).thenReturn(personInfoMock);
 
     //When
     Map<Integer, List<Map<String, List<PersonInfo>>>> actual = classUnderTest.getResidentsContactFromToFireStation(new int[]{1});
