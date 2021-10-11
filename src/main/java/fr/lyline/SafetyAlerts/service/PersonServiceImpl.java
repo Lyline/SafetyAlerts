@@ -8,11 +8,24 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ The implementation of person service.
+
+ @author Quesne GC
+ @see fr.lyline.SafetyAlerts.repository.PersonRepo
+ @since 0.1 */
 @Service
 public class PersonServiceImpl implements PersonService {
   @Autowired
   PersonRepo repository;
 
+  /**
+   Instantiates a new Person service.
+
+   @param repository the person repository
+
+   @see fr.lyline.SafetyAlerts.repository.PersonRepo
+   */
   public PersonServiceImpl(PersonRepoImpl repository) {
     this.repository = repository;
   }

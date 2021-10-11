@@ -17,15 +17,43 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ The implementation Main functions api service. This class manages the endpoints service of the API.
+
+ @author Quesne GC
+ @see fr.lyline.SafetyAlerts.repository.PersonRepo
+ @see fr.lyline.SafetyAlerts.repository.MedicalRecordRepo
+ @see fr.lyline.SafetyAlerts.repository.FireStationRepo
+ @since 0.1 */
 @Service
 public class MainFunctionsAPIService {
+  /**
+   The Person repository.
+   */
   @Autowired
   PersonRepoImpl personRepo;
+  /**
+   The Fire station repository.
+   */
   @Autowired
   FireStationRepoImpl fireStationRepo;
+  /**
+   The Medical record repository.
+   */
   @Autowired
   MedicalRecordRepoImpl medicalRecordRepo;
 
+  /**
+   Instantiates a new Main functions api service.
+
+   @param personRepo        the person repo
+   @param fireStationRepo   the fire station repo
+   @param medicalRecordRepo the medical record repo
+
+   @see fr.lyline.SafetyAlerts.repository.PersonRepo
+   @see fr.lyline.SafetyAlerts.repository.MedicalRecordRepo
+   @see fr.lyline.SafetyAlerts.repository.FireStationRepo
+   */
   public MainFunctionsAPIService(PersonRepoImpl personRepo, FireStationRepoImpl fireStationRepo,
                                  MedicalRecordRepoImpl medicalRecordRepo) {
     this.personRepo = personRepo;
@@ -33,6 +61,15 @@ public class MainFunctionsAPIService {
     this.medicalRecordRepo = medicalRecordRepo;
   }
 
+  /**
+   Gets the list of all community email.
+
+   @param city the city of the community
+
+   @return the list of community email
+
+   @see fr.lyline.SafetyAlerts.repository.PersonRepo
+   */
   public Set<String> getCommunityEmail(String city) {
     List<Person> data = personRepo.findAll();
 
@@ -42,6 +79,16 @@ public class MainFunctionsAPIService {
         .collect(Collectors.toSet());
   }
 
+  /**
+   Gets the list of phone numbers desserve by the fire station entered on parameter.
+
+   @param fireStation_number the fire station number
+
+   @return the list of phone numbers
+
+   @see fr.lyline.SafetyAlerts.repository.FireStationRepo
+   @see fr.lyline.SafetyAlerts.repository.PersonRepo
+   */
   public Set<String> getPhoneForAlert(Integer fireStation_number) {
     List<FireStation> stationData = fireStationRepo.findAll();
     List<Person> personData = personRepo.findAll();
@@ -62,6 +109,18 @@ public class MainFunctionsAPIService {
     return list;
   }
 
+  /**
+   Gets identity and medical information of the person entered in parameter.
+
+   @param firstName the first name
+   @param lastName  the last name
+
+   @return the person info object
+
+   @see fr.lyline.SafetyAlerts.repository.PersonRepo
+   @see fr.lyline.SafetyAlerts.repository.MedicalRecordRepo
+   @see fr.lyline.SafetyAlerts.ObjectMapper.PersonInfo
+   */
   public PersonInfo getPersonInfo(String firstName, String lastName) {
     PersonInfo personInfo;
 
@@ -81,6 +140,16 @@ public class MainFunctionsAPIService {
     } else return null;
   }
 
+  /**
+   Gets a list of children with their parent identities by child. A child is a person has less or equal 18 years.
+
+   @param address the address
+
+   @return the list of child alert objects
+
+   @see fr.lyline.SafetyAlerts.repository.MedicalRecordRepo
+   @see fr.lyline.SafetyAlerts.ObjectMapper.ChildAlert
+   */
   public List<ChildAlert> getChildAlert(String address) {
     List<Person> persons = personRepo.findAll();
 
@@ -107,14 +176,23 @@ public class MainFunctionsAPIService {
     for (int i = 0; i < children.size(); i++) {
       result.add(new ChildAlert(children.get(i), ages.get(i), adults));
     }
-
     return result;
   }
 
+  /**
+   Gets the list sorted by address of residents with medical information from to fire station list entered in parameter.
+
+   @param stationList the station list
+
+   @return the list of residents contact from to the linked fire station
+
+   @see fr.lyline.SafetyAlerts.repository.PersonRepo
+   @see fr.lyline.SafetyAlerts.repository.FireStationRepo
+   @see fr.lyline.SafetyAlerts.repository.MedicalRecordRepo
+   */
   public Map<Integer, List<Map<String, List<PersonInfo>>>> getResidentsContactFromToFireStation(int[] stationList) {
     List<Person> persons = personRepo.findAll();
     List<FireStation> fireStations = fireStationRepo.findAll();
-
 
     Map<Integer, List<Map<String, List<PersonInfo>>>> result = new HashMap<>();
 
@@ -153,6 +231,14 @@ public class MainFunctionsAPIService {
     return result;
   }
 
+  /**
+   Gets the list of person information sorted by address by station and the sum of adults and children from to fire station
+   entered in parameter.
+
+   @param stationNumber the station number
+
+   @return the list of person information with the sum of adults and children
+   */
   public Map<String, List<Map<String, String>>> getPersonsInfoByStation(int stationNumber) {
     List<Person> personData = personRepo.findAll();
     List<FireStation> stationData = fireStationRepo.findAll();
@@ -206,6 +292,17 @@ public class MainFunctionsAPIService {
     return informationsList;
   }
 
+  /**
+   Gets the list of all person information, identity and medical, and fire station deserved from to address entered in
+   parameter.
+
+   @param address the address
+
+   @return the list of persons information by station number
+
+   @see fr.lyline.SafetyAlerts.repository.PersonRepo
+   @see fr.lyline.SafetyAlerts.repository.PersonRepo
+   */
   public Map<String, List<Object>> getPersonsInfoByAddress(String address) {
     List<Person> personData = personRepo.findAll();
     List<FireStation> fireStationData = fireStationRepo.findAll();
@@ -245,7 +342,6 @@ public class MainFunctionsAPIService {
       result.put("firestation", List.of(fireStations));
       result.put("persons", personInfoList);
     }
-
     return result;
   }
 }

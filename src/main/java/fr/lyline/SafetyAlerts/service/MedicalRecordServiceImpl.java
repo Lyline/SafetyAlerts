@@ -6,11 +6,24 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ The implementation Medical record service.
+
+ @author Quesne GC
+ @see fr.lyline.SafetyAlerts.repository.MedicalRecordRepo
+ @since 0.1 */
 @Service
 public class MedicalRecordServiceImpl implements MedicalRecordService {
 
   MedicalRecordRepoImpl repository;
 
+  /**
+   Instantiates a new Medical record service.
+
+   @param repository the medical record repository
+
+   @see fr.lyline.SafetyAlerts.repository.MedicalRecordRepo
+   */
   public MedicalRecordServiceImpl(MedicalRecordRepoImpl repository) {
     this.repository = repository;
   }

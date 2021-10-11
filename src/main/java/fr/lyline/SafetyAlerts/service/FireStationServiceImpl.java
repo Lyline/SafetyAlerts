@@ -10,11 +10,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ The implementation of fire station service.
+
+ @author Quesne GC
+ @see fr.lyline.SafetyAlerts.repository.FireStationRepo
+ @since 0.1 */
 @Service
 public class FireStationServiceImpl implements FireStationService {
   @Autowired
   FireStationRepo repository;
 
+  /**
+   Instantiates a new Fire station service.
+
+   @param repository the fire station repository
+
+   @see fr.lyline.SafetyAlerts.repository.FireStationRepo
+   */
   public FireStationServiceImpl(FireStationRepoImpl repository) {
     this.repository = repository;
   }
@@ -30,7 +43,6 @@ public class FireStationServiceImpl implements FireStationService {
     }
     return list;
   }
-
 
   @Override
   public List<Integer> getAllFireStations() {
@@ -60,10 +72,5 @@ public class FireStationServiceImpl implements FireStationService {
   @Override
   public boolean removeFireStation(String stationNumber, String address) {
     return repository.deleteByStationAndAddress(Integer.valueOf(stationNumber), address);
-  }
-
-  public List<FireStation> getAllFireStationsObject() {
-    List<FireStation> data = repository.findAll();
-    return data;
   }
 }
