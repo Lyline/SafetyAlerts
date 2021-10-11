@@ -7,15 +7,24 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ The implementation of medical record repository for json data.
+
+ @author Quesne GC
+ @since 0.1 */
 @Repository
 public class MedicalRecordRepoImpl implements MedicalRecordRepo {
   JsonConverter data;
   String fileJsonPath = "src/main/resources/medicalRecord.json";
 
+  /**
+   Instantiates a new Medical record repository.
+
+   @param data the medical record object data
+   */
   public MedicalRecordRepoImpl(JsonConverter data) {
     this.data = data;
   }
-
 
   @Override
   public List<MedicalRecord> findAll() {
@@ -59,6 +68,7 @@ public class MedicalRecordRepoImpl implements MedicalRecordRepo {
     } else return false;
   }
 
+  @Override
   public boolean deleteByFirstNameAndLastName(String firstName, String lastName) {
     List<MedicalRecord> medicalDataList = (List<MedicalRecord>) data.convertJsonToObject(fileJsonPath);
     MedicalRecord medicalRecordToDelete = null;
@@ -77,6 +87,14 @@ public class MedicalRecordRepoImpl implements MedicalRecordRepo {
     } else return false;
   }
 
+  /**
+   Find the medical record and return this medical record if its exist in the database, when a medical record object entered
+   in parameter.
+
+   @param medic the medic
+
+   @return the medical record recorded on the database
+   */
   public MedicalRecord findMedic(MedicalRecord medic) {
     MedicalRecord medicSearch = null;
     List<MedicalRecord> medicalRecordDataList = (List<MedicalRecord>) data.convertJsonToObject(fileJsonPath);
@@ -89,6 +107,15 @@ public class MedicalRecordRepoImpl implements MedicalRecordRepo {
     return medicSearch;
   }
 
+  /**
+   Find a medical record of a person when the first name and the last name entered in parameter, and return this medical
+   record object if its exist, else its return null.
+
+   @param firstName the first name
+   @param lastName  the last name
+
+   @return the medical record
+   */
   public MedicalRecord findMedic(String firstName, String lastName) {
     MedicalRecord medicSearch = null;
     List<MedicalRecord> medicalRecordDataList = (List<MedicalRecord>) data.convertJsonToObject(fileJsonPath);

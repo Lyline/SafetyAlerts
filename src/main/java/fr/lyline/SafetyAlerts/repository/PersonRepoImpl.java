@@ -7,12 +7,22 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ The implementation of person repository for json data.
+
+ @author Quesne GC
+ @since 0.1 */
 @Repository
 public class PersonRepoImpl implements PersonRepo {
 
   JsonConverter data;
   String fileJsonPath = "src/main/resources/person.json";
 
+  /**
+   Instantiates a new Person repository.
+
+   @param data the data
+   */
   public PersonRepoImpl(JsonConverter data) {
     this.data = data;
   }

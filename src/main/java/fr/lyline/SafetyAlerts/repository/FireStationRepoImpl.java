@@ -7,12 +7,23 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ The implementation of fire station repository for json data.
+
+ @author Quesne GC
+ @see fr.lyline.SafetyAlerts.repository.FireStationRepo
+ @since 0.1 */
 @Repository
 public class FireStationRepoImpl implements FireStationRepo {
 
   JsonConverter data;
   String fileJsonPath = "src/main/resources/fireStation.json";
 
+  /**
+   Instantiates a new Fire station repository.
+
+   @param data the fire station object data
+   */
   public FireStationRepoImpl(JsonConverter data) {
     this.data = data;
   }
@@ -49,12 +60,12 @@ public class FireStationRepoImpl implements FireStationRepo {
   }
 
   @Override
-  public boolean update(Integer oldStationNumber, String address, FireStation fireStationToUpDate) {
+  public boolean update(Integer oldStationNumber, String oldAddress, FireStation fireStationToUpDate) {
     List<FireStation> stationDataList = (List<FireStation>) data.convertJsonToObject(fileJsonPath);
     FireStation oldStation = null;
 
     for (FireStation stationSearch : stationDataList) {
-      if (stationSearch.getStation() == oldStationNumber && stationSearch.getAddress().equals(address)) {
+      if (stationSearch.getStation() == oldStationNumber && stationSearch.getAddress().equals(oldAddress)) {
         oldStation = stationSearch;
       }
     }
