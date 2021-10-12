@@ -21,7 +21,7 @@ import java.util.List;
 public class PersonController {
 
   /**
-   The interface of peron service.
+   The interface of person service.
 
    @see fr.lyline.SafetyAlerts.service.PersonService
    */
@@ -38,8 +38,7 @@ public class PersonController {
 
   /**
    Gets a list of persons identity and a HttpStatus 200 when the person service return its response, else its return an
-   empty list
-   and a HttpStatus 404.
+   empty list and a HttpStatus 404.
 
    @return the list of persons
 
@@ -69,17 +68,17 @@ public class PersonController {
 
    @return Person object
    */
-  @GetMapping("/persons/{firstName}_{lastName}")
+  @GetMapping("/person/{firstName}_{lastName}")
   public ResponseEntity<Person> getPerson(@PathVariable() String firstName,
                                           @PathVariable() String lastName) {
     Person response = service.getPerson(firstName, lastName);
 
     if (response != null) {
-      logger.info("GET /persons/" + firstName + "_" + lastName + " - Status 200");
+      logger.info("GET /person/" + firstName + "_" + lastName + " - Status 200");
       logger.info(response.toString());
       return new ResponseEntity<>(response, HttpStatus.OK);
     } else {
-      logger.warn("GET /persons/" + firstName + "_" + lastName + " - Status 404");
+      logger.warn("GET /person/" + firstName + "_" + lastName + " - Status 404");
       logger.info("null");
       return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
@@ -94,24 +93,24 @@ public class PersonController {
 
    @return the added person
    */
-  @PostMapping("/persons")
+  @PostMapping("/person")
   public ResponseEntity<Person> addPerson(@RequestBody Person person) {
     Person personIsPresent = service.getPerson(person.getFirstName(), person.getLastName());
 
     if (personIsPresent == null) {
       boolean response = service.addPerson(person);
       if (response) {
-        logger.info("POST /persons : " + person.getFirstName() + " " + person.getLastName() + " - Status 201");
+        logger.info("POST /person : " + person.getFirstName() + " " + person.getLastName() + " - Status 201");
         logger.info(person);
         return new ResponseEntity<>(person, HttpStatus.CREATED);
       } else {
-        logger.warn("POST /persons : " + person.getFirstName() + " " + person.getLastName() +
+        logger.warn("POST /person : " + person.getFirstName() + " " + person.getLastName() +
             " - Incomplete informations for creation - Status 404");
         logger.info(person.toString());
         return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
       }
     } else {
-      logger.warn("POST /persons : " + person.getFirstName() + " " + person.getLastName() +
+      logger.warn("POST /person : " + person.getFirstName() + " " + person.getLastName() +
           " - Person already exist - Status 409");
       logger.info("null");
       return new ResponseEntity<>(null, HttpStatus.CONFLICT);
@@ -128,7 +127,7 @@ public class PersonController {
 
    @return the person updated
    */
-  @PatchMapping("/persons/{firstName}_{lastName}")
+  @PutMapping("/person/{firstName}_{lastName}")
   public ResponseEntity<Person> updatePerson(@PathVariable(value = "firstName") String firstName,
                                              @PathVariable(value = "lastName") String lastName,
                                              @RequestBody Person personToUpDate) {
@@ -136,11 +135,11 @@ public class PersonController {
 
     if (personSaved != null) {
       service.upDatePerson(personToUpDate);
-      logger.info("PATCH /persons/" + personSaved.getFirstName() + "_" + personSaved.getLastName() + " - Status 200");
+      logger.info("PUT /person/" + personSaved.getFirstName() + "_" + personSaved.getLastName() + " - Status 200");
       logger.info("Exist : " + personSaved + "\nUpdate : " + personToUpDate.toString());
       return new ResponseEntity<>(personToUpDate, HttpStatus.OK);
     } else {
-      logger.warn("PATCH /persons/" + firstName + "_" + lastName + " - Person not exist - Status 404");
+      logger.warn("PATCH /person/" + firstName + "_" + lastName + " - Person not exist - Status 404");
       logger.info(personSaved);
       return new ResponseEntity<>(personSaved, HttpStatus.NOT_FOUND);
     }
@@ -155,19 +154,19 @@ public class PersonController {
 
    @return the person deleted
    */
-  @DeleteMapping("/persons/{firstName}_{lastName}")
+  @DeleteMapping("/person/{firstName}_{lastName}")
   public ResponseEntity deletePerson(@PathVariable(value = "firstName") String firstName,
                                      @PathVariable(value = "lastName") String lastName) {
     Person personToDelete = service.getPerson(firstName, lastName);
 
     if (personToDelete != null) {
       service.removePerson(firstName, lastName);
-      logger.info("DELETE /persons/" + personToDelete.getFirstName() + "_" + personToDelete.getLastName() +
+      logger.info("DELETE /person/" + personToDelete.getFirstName() + "_" + personToDelete.getLastName() +
           " - Status 200");
       logger.info(personToDelete.toString());
       return new ResponseEntity(personToDelete, HttpStatus.OK);
     } else {
-      logger.warn("DELETE /persons/" + firstName + "_" + lastName +
+      logger.warn("DELETE /person/" + firstName + "_" + lastName +
           " - Person not exist - Status 404");
       logger.info("null");
       return new ResponseEntity(null, HttpStatus.NOT_FOUND);

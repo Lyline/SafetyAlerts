@@ -82,7 +82,7 @@ class MedicalRecordControllerTest {
     given(service.getMedicalRecordByFirstNameAndLastName("Homer", "Simpson")).willReturn(medic1);
 
     //When
-    MvcResult result = mvc.perform(get("/medicalrecords/Homer_Simpson")
+    MvcResult result = mvc.perform(get("/medicalrecord/Homer_Simpson")
             .contentType(MediaType.APPLICATION_JSON)
             .param("firstName", "Homer")
             .param("lastName", "Simpson"))
@@ -103,7 +103,7 @@ class MedicalRecordControllerTest {
     given(service.getMedicalRecordByFirstNameAndLastName("John", "Doe")).willReturn(null);
 
     //When
-    MvcResult result = mvc.perform(get("/medicalrecords/John_Doe")
+    MvcResult result = mvc.perform(get("/medicalrecord/John_Doe")
             .contentType(MediaType.APPLICATION_JSON)
             .param("firstName", "John")
             .param("lastName", "Doe"))
@@ -120,7 +120,7 @@ class MedicalRecordControllerTest {
     given((service.getMedicalRecordByFirstNameAndLastName("John", "Doe"))).willReturn(null);
 
     //When
-    MvcResult result = mvc.perform(post("/medicalrecords")
+    MvcResult result = mvc.perform(post("/medicalrecord")
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"firstName\":\"John\"," +
                 "\"lastName\":\"Doe\"," +
@@ -147,7 +147,7 @@ class MedicalRecordControllerTest {
     given((service.getMedicalRecordByFirstNameAndLastName("John", "Doe"))).willReturn(medic);
 
     //When
-    MvcResult result = mvc.perform(post("/medicalrecords")
+    MvcResult result = mvc.perform(post("/medicalrecord")
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"firstName\":\"John\"," +
                 "\"lastName\":\"Doe\"," +
@@ -167,7 +167,7 @@ class MedicalRecordControllerTest {
     when(service.getMedicalRecordByFirstNameAndLastName("Homer", "Simpson")).thenReturn(medic1);
 
     //When
-    MvcResult result = mvc.perform(patch("/medicalrecords/Homer_Simpson")
+    MvcResult result = mvc.perform(put("/medicalrecord/Homer_Simpson")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -192,7 +192,7 @@ class MedicalRecordControllerTest {
     when(service.getMedicalRecordByFirstNameAndLastName("Homer", "Simpson")).thenReturn(null);
 
     //When
-    MvcResult result = mvc.perform(patch("/medicalrecords/Homer_Simpson")
+    MvcResult result = mvc.perform(put("/medicalrecord/Homer_Simpson")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -214,7 +214,7 @@ class MedicalRecordControllerTest {
     when(service.removeMedicalRecordByFirstNameAndLastName("Homer", "Simpson")).thenReturn(true);
 
     //When
-    MvcResult result = mvc.perform(delete("/medicalrecords/Homer_Simpson")
+    MvcResult result = mvc.perform(delete("/medicalrecord/Homer_Simpson")
             .contentType(MediaType.APPLICATION_JSON)
             .param("firstName", "Homer")
             .param("lastName", "Simpson"))
@@ -235,7 +235,7 @@ class MedicalRecordControllerTest {
     when(service.removeMedicalRecordByFirstNameAndLastName("Homer", "Simpson")).thenReturn(false);
 
     //When
-    MvcResult result = mvc.perform(delete("/medicalrecords/John_Doe")
+    MvcResult result = mvc.perform(delete("/medicalrecord/John_Doe")
             .contentType(MediaType.APPLICATION_JSON)
             .param("firstName", "John")
             .param("lastName", "Doe"))

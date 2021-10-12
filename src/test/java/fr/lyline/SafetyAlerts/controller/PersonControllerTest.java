@@ -87,7 +87,7 @@ public class PersonControllerTest {
     given(service.getPerson("Homer", "Simpson")).willReturn(person1);
 
     //When
-    MvcResult result = mvc.perform(get("/persons/Homer_Simpson")
+    MvcResult result = mvc.perform(get("/person/Homer_Simpson")
             .contentType(MediaType.APPLICATION_JSON)
             .param("firstName", "Homer")
             .param("lastName", "Simpson"))
@@ -130,7 +130,7 @@ public class PersonControllerTest {
     given(service.addPerson(person)).willReturn(false);
 
     //When
-    MvcResult result = mvc.perform(post("/persons")
+    MvcResult result = mvc.perform(post("/person")
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"firstName\":\"Jo\"," +
                 "\"lastName\":\"Simpson\"," +
@@ -151,7 +151,7 @@ public class PersonControllerTest {
     given(service.getPerson("Homer", "Simpson")).willReturn(person1);
 
     //When
-    MvcResult result = mvc.perform(post("/persons")
+    MvcResult result = mvc.perform(post("/person")
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"firstName\":\"Homer\"," +
                 "\"lastName\":\"Simpson\"," +
@@ -173,7 +173,7 @@ public class PersonControllerTest {
     //Given
     given(service.getPerson("Homer", "Simpson")).willReturn(person1);
 //When
-    MvcResult result = mvc.perform(patch("/persons/Homer_Simpson")
+    MvcResult result = mvc.perform(put("/person/Homer_Simpson")
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -202,7 +202,7 @@ public class PersonControllerTest {
     //Given
     given(service.getPerson("Homer", "Simpson")).willReturn(null);
     //When
-    MvcResult result = mvc.perform(patch("/persons/Homer_Simpson")
+    MvcResult result = mvc.perform(put("/persons/Homer_Simpson")
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -226,7 +226,7 @@ public class PersonControllerTest {
     when(service.removePerson("Homer", "Simpson")).thenReturn(true);
 
     //When
-    MvcResult result = mvc.perform(delete("/persons/Homer_Simpson")
+    MvcResult result = mvc.perform(delete("/person/Homer_Simpson")
             .contentType(MediaType.APPLICATION_JSON)
             .param("firstName", "Homer")
             .param("lastName", "Simpson"))
@@ -250,7 +250,7 @@ public class PersonControllerTest {
     when(service.getPerson("Homer", "Simpson")).thenReturn(null);
     when(service.removePerson("Homer", "Simpson")).thenReturn(false);
     //When
-    MvcResult result = mvc.perform(delete("/persons/Homer_Simpson")
+    MvcResult result = mvc.perform(delete("/person/Homer_Simpson")
             .contentType(MediaType.APPLICATION_JSON)
             .param("firstName", "Homer")
             .param("lastName", "Simpson"))

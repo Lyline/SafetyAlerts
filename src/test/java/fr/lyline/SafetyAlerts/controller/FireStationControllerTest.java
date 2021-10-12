@@ -75,7 +75,7 @@ public class FireStationControllerTest {
     when(service.getFireStation("42 Wallaby Way")).thenReturn(List.of(1, 2));
 
     //When
-    MvcResult result = mvc.perform(get("/firestations/42 Wallaby Way")
+    MvcResult result = mvc.perform(get("/firestation/42 Wallaby Way")
             .contentType(MediaType.APPLICATION_JSON)
             .param("address", "42 Wallaby Way"))
         .andExpect(status().isOk())
@@ -91,7 +91,7 @@ public class FireStationControllerTest {
     when(service.getFireStation("NoWhere")).thenReturn(List.of());
 
     //When
-    MvcResult result = mvc.perform(get("/firestations/NoWhere")
+    MvcResult result = mvc.perform(get("/firestation/NoWhere")
             .contentType(MediaType.APPLICATION_JSON)
             .param("address", "NoWhere"))
         .andExpect(status().isNotFound())
@@ -109,7 +109,7 @@ public class FireStationControllerTest {
     given(service.addFireStation(station)).willReturn(true);
 
     //When
-    MvcResult result = mvc.perform(post("/firestations")
+    MvcResult result = mvc.perform(post("/firestation")
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"station\":5 ," +
                 "\"address\":\"NoWhere\"}"))
@@ -127,7 +127,7 @@ public class FireStationControllerTest {
     when(service.updateFireStation(2, "Nowhere", station)).thenReturn(false);
 
     //When
-    MvcResult result = mvc.perform(patch("/firestations/2-Nowhere")
+    MvcResult result = mvc.perform(put("/firestation/2-Nowhere")
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -147,7 +147,7 @@ public class FireStationControllerTest {
     when(service.removeFireStation("1", "42 Wallaby Way")).thenReturn(true);
 
     //When
-    MvcResult result = mvc.perform(delete("/firestations/1-42 Wallaby Way")
+    MvcResult result = mvc.perform(delete("/firestation/1-42 Wallaby Way")
             .contentType(MediaType.APPLICATION_JSON)
             .param("stationNumber", "1")
             .param("address", "42 Wallaby Way"))
@@ -165,7 +165,7 @@ public class FireStationControllerTest {
     when(service.removeFireStation("1", "NoWhere")).thenReturn(false);
 
     //When
-    MvcResult result = mvc.perform(delete("/firestations/1-NoWhere")
+    MvcResult result = mvc.perform(delete("/firestation/1-NoWhere")
             .contentType(MediaType.APPLICATION_JSON)
             .param("stationNumber", "1")
             .param("address", "NoWhere"))
