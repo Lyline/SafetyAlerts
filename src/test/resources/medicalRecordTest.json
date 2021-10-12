@@ -1,0 +1,20 @@
+[
+  {
+    "firstName": "Tenley",
+    "lastName": "Boyd",
+    "birthdate": "02/18/2012",
+    "medications": [],
+    "allergies": [
+      "peanut"
+    ]
+  },
+  {
+    "firstName": "Peter",
+    "lastName": "Duncan",
+    "birthdate": "09/06/2000",
+    "medications": [],
+    "allergies": [
+      "shellfish"
+    ]
+  }
+]
