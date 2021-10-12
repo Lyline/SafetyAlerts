@@ -64,16 +64,16 @@ public class MedicalRecordController {
 
    @return the medical record
    */
-  @GetMapping("/medicalrecords/{firstName}_{lastName}")
+  @GetMapping("/medicalrecord/{firstName}_{lastName}")
   public ResponseEntity<MedicalRecord> getMedicalRecord(@PathVariable(value = "firstName") String firstName,
                                                         @PathVariable(value = "lastName") String lastName) {
     MedicalRecord response = service.getMedicalRecordByFirstNameAndLastName(firstName, lastName);
     if (response != null) {
-      logger.info("GET /medicalrecords/" + response.getFirstName() + "_" + response.getLastName() + " - Status 200");
+      logger.info("GET /medicalrecord/" + response.getFirstName() + "_" + response.getLastName() + " - Status 200");
       logger.info(response);
       return new ResponseEntity<>(response, HttpStatus.OK);
     } else {
-      logger.warn("GET /medicalrecords/" + firstName + "_" + lastName + " - Medical record not exist - Status 404");
+      logger.warn("GET /medicalrecord/" + firstName + "_" + lastName + " - Medical record not exist - Status 404");
       logger.info(response);
       return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
@@ -88,7 +88,7 @@ public class MedicalRecordController {
 
    @return the added medical record
    */
-  @PostMapping("/medicalrecords")
+  @PostMapping("/medicalrecord")
   public ResponseEntity<MedicalRecord> addMedicalRecord(@RequestBody MedicalRecord medicalRecord) {
     MedicalRecord medicalRecordIsExist =
         service.getMedicalRecordByFirstNameAndLastName(medicalRecord.getFirstName(), medicalRecord.getLastName());
@@ -96,7 +96,7 @@ public class MedicalRecordController {
     if (medicalRecord.getFirstName() == null | medicalRecord.getLastName() == null |
         medicalRecord.getBirthdate() == null | medicalRecord.getMedications() == null |
         medicalRecord.getAllergies() == null) {
-      logger.warn("POST /medicalrecords " + medicalRecord.getFirstName() + " " + medicalRecord.getLastName() +
+      logger.warn("POST /medicalrecord " + medicalRecord.getFirstName() + " " + medicalRecord.getLastName() +
           " - Incomplete informations for creation - Status 404");
       logger.info(medicalRecord);
       return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -104,11 +104,11 @@ public class MedicalRecordController {
 
     if (medicalRecordIsExist == null) {
       service.addMedicalRecord(medicalRecord);
-      logger.info("POST /medicalrecords : " + medicalRecord.getFirstName() + " " + medicalRecord.getLastName() + " - Status 201");
+      logger.info("POST /medicalrecord : " + medicalRecord.getFirstName() + " " + medicalRecord.getLastName() + " - Status 201");
       logger.info(medicalRecord);
       return new ResponseEntity<>(medicalRecord, HttpStatus.CREATED);
     } else {
-      logger.warn("POST /medicalrecords : " + medicalRecord.getFirstName() + " " + medicalRecord.getLastName() + " - Medical " +
+      logger.warn("POST /medicalrecord : " + medicalRecord.getFirstName() + " " + medicalRecord.getLastName() + " - Medical " +
           "record already exist - Status 409");
       logger.info("null");
       return new ResponseEntity<>(null, HttpStatus.CONFLICT);
@@ -126,7 +126,7 @@ public class MedicalRecordController {
 
    @return the response entity
    */
-  @PatchMapping("/medicalrecords/{firstName}_{lastName}")
+  @PutMapping("/medicalrecord/{firstName}_{lastName}")
   public ResponseEntity<MedicalRecord> upDateMedicalRecord(@PathVariable(value = "firstName") String firstName,
                                                            @PathVariable(value = "lastName") String lastName,
                                                            @RequestBody MedicalRecord medicalRecordToUpdate) {
@@ -134,11 +134,11 @@ public class MedicalRecordController {
 
     if (medicalRecordIsExist != null) {
       service.updateMedicalRecord(medicalRecordToUpdate);
-      logger.info("PATCH /medicalrecord/" + firstName + "_" + lastName + " - Status 200");
+      logger.info("PUT /medicalrecord/" + firstName + "_" + lastName + " - Status 200");
       logger.info("Exist : " + medicalRecordIsExist + "\nUpdate : " + medicalRecordToUpdate);
       return new ResponseEntity<>(medicalRecordToUpdate, HttpStatus.OK);
     } else {
-      logger.warn("PATCH /medicalrecords/" + firstName + "_" + lastName + " - Medical record not exist - Status 304");
+      logger.warn("PUT /medicalrecord/" + firstName + "_" + lastName + " - Medical record not exist - Status 304");
       logger.info("null");
       return new ResponseEntity<>(null, HttpStatus.NOT_MODIFIED);
     }
@@ -153,18 +153,18 @@ public class MedicalRecordController {
 
    @return the deleted medical record
    */
-  @DeleteMapping("/medicalrecords/{firstName}_{lastName}")
+  @DeleteMapping("/medicalrecord/{firstName}_{lastName}")
   public ResponseEntity deleteMedicalRecord(@PathVariable(value = "firstName") String firstName,
                                             @PathVariable(value = "lastName") String lastName) {
     MedicalRecord medicalRecordIsExist = service.getMedicalRecordByFirstNameAndLastName(firstName, lastName);
 
     if (medicalRecordIsExist != null) {
       service.removeMedicalRecordByFirstNameAndLastName(firstName, lastName);
-      logger.info("DELETE /medicalrecords/" + firstName + "_" + lastName + " - Status 200");
+      logger.info("DELETE /medicalrecord/" + firstName + "_" + lastName + " - Status 200");
       logger.info(medicalRecordIsExist);
       return new ResponseEntity(medicalRecordIsExist, HttpStatus.OK);
     } else {
-      logger.warn("DELETE /medicalrecords/" + firstName + "_" + lastName + " - Medical record not exist - Status 404");
+      logger.warn("DELETE /medicalrecord/" + firstName + "_" + lastName + " - Medical record not exist - Status 404");
       logger.info("null");
       return new ResponseEntity(null, HttpStatus.NOT_FOUND);
     }
