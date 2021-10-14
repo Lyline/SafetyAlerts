@@ -51,7 +51,8 @@ public class PersonRepoImpl implements PersonRepo {
     Person personIsExist = null;
 
     for (Person p : personDataList) {
-      if (p.getFirstName().equals(person.getFirstName())) {
+      if (p.getFirstName().equals(person.getFirstName()) &
+          p.getLastName().equals(person.getLastName())) {
         personIsExist = p;
       }
     }
